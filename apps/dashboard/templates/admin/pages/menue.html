@@ -1,0 +1,254 @@
+{% extends "admin/base/base.html" %}
+{% load static %}
+{% block title %}Admin Menue{% endblock %}
+{% block admin_css %}
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock admin_css %}
+{% block admin_main %}
+
+<div class="admin-grid-2">
+    <!-- TABLE -->
+    <div class="admin-card">
+        <div class="admin-card-title">
+            <h2>All Menues</h2>
+            <span class="status-pill">
+                {{ menues.count }} Menues
+            </span>
+        </div>
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="sortableMenue">
+                    {% for menue in menues %}
+                    <tr
+                        data-id="{{ menue.id }}"
+                        class="sortable-row"
+                    >
+                        <td class="order-number">
+                            {{ menue.order }}
+                        </td>
+                        <td>
+                            <div class="admin-product-cell">
+                                <div class="category-icon">
+                                    <i class="fa-solid fa-gem"></i>
+                                </div>
+                                <strong>
+                                    {{ menue.get_name_display }}
+                                </strong>
+                            </div>
+                        </td>
+                        <td>
+                            {% if menue.is_visible %}
+                                <span class="status-pill status-green">
+                                    Visible
+                                </span>
+                            {% else %}
+                                <span class="status-pill">
+                                    Hidden
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ menue.created_at|date:"d M Y" }}
+                        </td>
+                        <td>
+                            <a
+                                href="?edit={{ menue.id }}"
+                                class="admin-btn gold"
+                            >
+                                <i class="fa-solid fa-pen"></i>
+                            </a>
+                            <form
+                                method="POST"
+                                style="display:inline-block;"
+                            >
+                                {% csrf_token %}
+                                <input
+                                    type="hidden"
+                                    name="action"
+                                    value="delete"
+                                >
+                                <input
+                                    type="hidden"
+                                    name="menue_id"
+                                    value="{{ menue.id }}"
+                                >
+                                <button
+                                    type="submit"
+                                    class="admin-btn danger"
+                                    onclick="return confirm('Delete this menue?')"
+                                >
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">
+                            No menues found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- FORM -->
+    <div class="admin-card">
+        <div class="admin-card-title">
+            {% if edit_menue %}
+                <h2>Update Menue</h2>
+            {% else %}
+                <h2>Add Menue</h2>
+            {% endif %}
+        </div>
+        <form method="POST" class="admin-form-grid">
+            {% csrf_token %}
+            {% if edit_menue %}
+                <input
+                    type="hidden"
+                    name="action"
+                    value="update"
+                >
+                <input
+                    type="hidden"
+                    name="menue_id"
+                    value="{{ edit_menue.id }}"
+                >
+            {% else %}
+                <input
+                    type="hidden"
+                    name="action"
+                    value="create"
+                >
+            {% endif %}
+            <!-- NAME -->
+            <div class="admin-field full-field">
+                <label>Menue Name</label>
+                <select name="name" required>
+                    <option value="">
+                        Select Menue
+                    </option>
+                    {% for value, label in menu_types %}
+                        <option
+                            value="{{ value }}"
+                            {% if edit_menue and edit_menue.name == value %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- STATUS -->
+            <div class="admin-field full-field">
+                <label class="checkbox-field">
+                    <input
+                        type="checkbox"
+                        name="is_visible"
+                        {% if not edit_menue or edit_menue.is_visible %}
+                            checked
+                        {% endif %}
+                    >
+                    Show this menue
+                </label>
+            </div>
+            <!-- BUTTON -->
+            <div class="admin-field full-field">
+                <button
+                    class="gold-btn full"
+                    type="submit"
+                >
+                    {% if edit_menue %}
+                        <i class="fa-solid fa-pen"></i>
+                        Update Menue
+                    {% else %}
+                        <i class="fa-solid fa-plus"></i>
+                        Save Menue
+                    {% endif %}
+                </button>
+                {% if edit_menue %}
+                    <a
+                        href="{% url 'dashboard:menue' %}"
+                        class="admin-btn cancel-btn"
+                    >
+                        Cancel
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock admin_main %}
+
+{% block admin_js %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const sortableMenue =
+        document.getElementById("sortableMenue");
+
+    if (sortableMenue) {
+
+        new Sortable(sortableMenue, {
+
+            animation: 180,
+
+            onEnd: function () {
+
+                let orderData = [];
+
+                document
+                    .querySelectorAll("#sortableMenue tr[data-id]")
+                    .forEach(function (row, index) {
+
+                        orderData.push({
+                            id: row.dataset.id,
+                            order: index + 1
+                        });
+
+                        const orderCell =
+                            row.querySelector(".order-number");
+
+                        if (orderCell) {
+                            orderCell.innerText = index + 1;
+                        }
+
+                    });
+
+                fetch("{% url 'dashboard:menue_order' %}", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+
+                    body: JSON.stringify(orderData)
+
+                });
+
+            }
+
+        });
+
+    }
+
+});
+
+</script>
+{% endblock admin_js %}

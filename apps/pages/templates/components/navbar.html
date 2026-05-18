@@ -1,0 +1,356 @@
+{% load static %}
+
+<!-- NAVBAR -->
+<header class="navbar" id="navbar">
+
+    <!-- MOBILE MENU BUTTON -->
+    <button class="hamburger" id="menuOpen">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <!-- DESKTOP MENU -->
+    <nav class="desktop-menu">
+
+        <a href="{% url 'pages:home' %}">
+            Home
+        </a>
+
+        <!-- JEWELLERY DROPDOWN -->
+        <div class="nav-dropdown">
+
+            <button class="dropdown-btn">
+                Jewellery
+                <i class="fa-solid fa-angle-down"></i>
+            </button>
+
+            <div class="dropdown-menu">
+
+                {% for menue in menues %}
+
+                    <div class="dropdown-item">
+
+                        <a
+                            href="{% url 'pages:menue_products' menue.slug %}"
+                            class="dropdown-title"
+                        >
+
+                            {{ menue.get_name_display }}
+
+                            {% if menue.visible_categories %}
+                                <i class="fa-solid fa-angle-right"></i>
+                            {% endif %}
+
+                        </a>
+
+                        {% if menue.visible_categories %}
+
+                            <div class="sub-dropdown">
+
+                                {% for category in menue.visible_categories %}
+
+                                    <a href="{% url 'pages:category_products' menue.slug category.slug %}">
+                                        {{ category.get_name_display }}
+                                    </a>
+
+                                {% endfor %}
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+        <!-- NAV LINKS -->
+        <a href="#products">
+            Shop
+        </a>
+
+        <a href="#track">
+            Track Order
+        </a>
+
+        <a href="#footer">
+            Contact
+        </a>
+
+    </nav>
+
+    <!-- NAV ACTIONS -->
+    <div class="nav-actions">
+
+        <!-- SEARCH -->
+        <button id="searchToggle" class="icon-btn">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+
+        <!-- USER -->
+        {% if request.user.is_authenticated and request.user.user_type == 2 %}
+
+            <div class="user-dropdown">
+
+                <button class="icon-btn user-dropdown-btn">
+                    <i class="fa-regular fa-user"></i>
+                </button>
+
+                <div class="user-dropdown-menu">
+
+                    <a href="{% url 'pages:profile' %}">
+                        <i class="fa-regular fa-user"></i>
+                        Profile
+                    </a>
+
+                    <a href="{% url 'pages:settings' %}">
+                        <i class="fa-solid fa-gear"></i>
+                        Settings
+                    </a>
+
+                    <a href="{% url 'dashboard:logout' %}">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        Logout
+                    </a>
+
+                </div>
+
+            </div>
+
+        {% else %}
+
+            <a href="{% url 'pages:login' %}" class="icon-btn">
+                <i class="fa-regular fa-user"></i>
+            </a>
+
+        {% endif %}
+
+        <!-- WISHLIST -->
+        <a
+            href="{% if request.user.is_authenticated %}{% url 'pages:wishlist' %}{% else %}javascript:void(0){% endif %}"
+            class="icon-btn cart-btn wishlist-login-check"
+            data-login="{% url 'pages:login' %}"
+        >
+
+            <i class="fa-regular fa-heart"></i>
+
+            <span id="wishlistCount">
+                {{ wishlist_count|default:0 }}
+            </span>
+
+        </a>
+
+        <!-- CART -->
+        <a
+            href="{% if request.user.is_authenticated %}{% url 'pages:cart' %}{% else %}javascript:void(0){% endif %}"
+            class="icon-btn cart-btn cart-login-check"
+            data-login="{% url 'pages:login' %}"
+        >
+
+            <i class="fa-solid fa-bag-shopping"></i>
+
+            <span id="cartCount">
+                {{ cart_count|default:0 }}
+            </span>
+
+        </a>
+
+    </div>
+
+    <!-- SEARCH PANEL -->
+    <section class="search-panel" id="searchPanel">
+
+        <div class="search-inner">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search rings, necklaces, diamond, gold..."
+            >
+
+            <div id="searchSuggestions"></div>
+
+        </div>
+
+    </section>
+
+</header>
+
+
+<style>
+
+/* =========================
+   USER DROPDOWN
+========================= */
+
+.user-dropdown {
+    position: relative;
+}
+
+.user-dropdown-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: .3s;
+    font-size: 18px;
+}
+
+.user-dropdown-btn:hover {
+    background: rgba(197,155,67,.10);
+    color: var(--gold);
+}
+
+.user-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+
+    width: 210px;
+
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    box-shadow: 0 15px 40px rgba(0,0,0,.10);
+
+    padding: 10px;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition: .3s ease;
+
+    z-index: 9999;
+}
+
+.user-dropdown:hover .user-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+.user-dropdown-menu a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 500;
+    transition: .3s;
+}
+
+.user-dropdown-menu a:hover {
+    background: rgba(197,155,67,.10);
+    color: var(--gold);
+}
+
+.user-dropdown-menu a i {
+    width: 18px;
+    text-align: center;
+}
+
+
+/* =========================
+   ICON BUTTON
+========================= */
+
+.icon-btn {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    text-decoration: none;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: .3s;
+    font-size: 18px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.icon-btn:hover {
+    background: rgba(197,155,67,.10);
+    color: var(--gold);
+}
+
+
+/* =========================
+   COUNT BADGE
+========================= */
+
+.cart-btn span {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+}
+
+
+/* =========================
+   SEARCH PANEL
+========================= */
+
+.search-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    padding: 20px;
+    display: none;
+    z-index: 999;
+}
+
+.search-panel.active {
+    display: block;
+}
+
+.search-inner {
+    max-width: 700px;
+    margin: auto;
+}
+
+.search-inner input {
+    width: 100%;
+    height: 52px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    padding: 0 18px;
+    outline: none;
+    font-size: 15px;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.search-inner input:focus {
+    border-color: var(--gold);
+}
+
+</style>

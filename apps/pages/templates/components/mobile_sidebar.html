@@ -1,0 +1,77 @@
+{% load static %}
+
+<div class="overlay" id="overlay"></div>
+
+<aside class="mobile-sidebar" id="mobileSidebar">
+
+    <div class="mobile-sidebar-header">
+        <a href="{% url 'pages:home' %}" class="sidebar-brand">
+            <img src="{% static 'images/logo/logo.png' %}" alt="Rojonigandha Jewelry">
+        </a>
+
+        <button class="close-btn" id="menuClose" type="button">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <nav class="mobile-nav">
+
+        <a href="{% url 'pages:home' %}">
+            <i class="fa-solid fa-house"></i>
+            Home
+        </a>
+
+        <div class="mobile-dropdown">
+
+            <button class="mobile-dropdown-btn" type="button">
+                <span><i class="fa-solid fa-gem"></i> Jewellery</span>
+                <i class="fa-solid fa-angle-down"></i>
+            </button>
+
+            <div class="mobile-dropdown-content">
+
+                {% for menue in menues %}
+                <div class="mobile-submenu">
+
+                    <button class="mobile-submenu-btn" type="button">
+                        <span>{{ menue.get_name_display }}</span>
+
+                        {% if menue.categories.all %}
+                            <i class="fa-solid fa-angle-down"></i>
+                        {% endif %}
+                    </button>
+
+                    {% if menue.categories.all %}
+                    <div class="mobile-submenu-content">
+                        {% for category in menue.categories.all %}
+                            <a href="{% url 'pages:category_products' menue.slug category.slug %}">
+                                {{ category.get_name_display }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                </div>
+                {% endfor %}
+
+            </div>
+        </div>
+
+        <a href="#products">
+            <i class="fa-solid fa-bag-shopping"></i>
+            Shop
+        </a>
+
+        <a href="#track">
+            <i class="fa-solid fa-truck-fast"></i>
+            Track Order
+        </a>
+
+        <a href="#footer">
+            <i class="fa-solid fa-phone"></i>
+            Contact
+        </a>
+
+    </nav>
+
+</aside>

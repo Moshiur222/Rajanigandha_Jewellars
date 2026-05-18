@@ -1,0 +1,70 @@
+{% extends 'admin/base/base.html' %}
+{% load static %}
+
+{% block title %}Admin Customers{% endblock %}
+
+{% block admin_css %}
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock admin_css %}
+
+{% block admin_main %}
+<div class="admin-card">
+                <div class="admin-card-title">
+                    <h2>Customer List</h2>
+                    <span class="status-pill">3 Customers</span>
+                </div>
+
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Total Orders</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>Nusrat Jahan</td>
+                                <td>nusrat@example.com</td>
+                                <td>01700000001</td>
+                                <td>8</td>
+                                <td>
+                                    <span class="status-pill status-green">
+                                        Active
+                                    </span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>Rahim Ahmed</td>
+                                <td>rahim@example.com</td>
+                                <td>01700000002</td>
+                                <td>5</td>
+                                <td>
+                                    <span class="status-pill status-green">
+                                        Active
+                                    </span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>Farhana Islam</td>
+                                <td>farhana@example.com</td>
+                                <td>01700000003</td>
+                                <td>2</td>
+                                <td>
+                                    <span class="status-pill status-dark">
+                                        New
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+{% endblock %}
