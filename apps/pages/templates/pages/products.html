@@ -1,0 +1,14 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Products{% endblock %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{% static 'css/pages/products.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class = "cart_border">
+    {% include "sections/products.html" %}
+</div>
+{% endblock %}

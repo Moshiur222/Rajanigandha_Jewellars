@@ -1,0 +1,121 @@
+{% load static %}
+{% load custom_filters %}
+<section class="section sale-bg reveal active">
+    {% if sale_products %}
+    <div class="section-title">
+        <span>Limited Deal</span>
+        <h2>Sale Jewellery</h2>
+    </div>
+
+    <div class="product-grid" id="saleGrid">
+
+        {% for product in sale_products %}
+        <article class="product-card">
+
+            {% if product.menue.discount_percent > 0 %}
+                <span class="badge">
+                    Save {{ product.menue.discount_percent }}%
+                </span>
+            {% endif %}
+
+            {% if product.is_available and product.stock > 0 %}
+                <span class="stock">
+                    In Stock
+                </span>
+            {% else %}
+                <span class="stock">
+                    Out of Stock
+                </span>
+            {% endif %}
+
+           <button
+                class="wish-btn add-wishlist-btn"
+                data-url="{% url 'pages:add_to_wishlist' product.id %}"
+                type="button"
+                aria-label="Wishlist"
+            >
+                <i class="fa-regular fa-heart"></i>
+            </button>
+        <a   href="{% url 'pages:quick_view_product' product.slug %}?next={{ request.get_full_path|urlencode }}">
+            <div class="product-image">
+
+                {% if product.image %}
+                    <img
+                        src="{{ product.image.url }}"
+                        alt="{{ product.name }}"
+                    >
+                {% endif %}
+
+            </div>
+
+            <div class="product-info">
+
+                <span class="product-meta">
+
+                    {{ product.menue.get_name_display }}
+                    /
+                    {{ product.category.get_name_display }}
+
+                    {% if product.subcategory %}
+                        / {{ product.subcategory.name }}
+                    {% endif %}
+
+                </span>
+
+                <h3>
+                    {{ product.name }}
+                </h3>
+
+                <small class="weight-text">
+                    {{ product.weight }} Gram
+                </small>
+
+                <div class="price-row">
+
+                    <span class="old-price">
+                        ৳{{ product.regular_price }}
+                    </span>
+
+                    <span class="new-price">
+                       ৳{{ product.final_price|bd_currency }}
+                    </span>
+
+                    <span class="save">
+                        {{ product.menue.discount_percent }}% OFF
+                    </span>
+
+                </div>
+                </a>
+                <div class="product-actions">
+
+                    <button
+                        class="gold-btn add-cart-btn"
+                        data-url="{% url 'pages:add_to_cart' product.id %}"
+                        type="button"
+                    >
+                        Add Cart
+                    </button>
+                    <button
+                        class="dark-btn buy-now-btn"
+                        data-url="{% url 'pages:add_to_cart' product.id %}"
+                        data-checkout="{% url 'pages:checkout' %}"
+                        type="button"
+                    >
+                        Book Now
+                    </button>
+
+                </div>
+
+            </div>
+
+        </article>
+
+        {% empty %}
+
+        <p>No sale products found.</p>
+
+        {% endfor %}
+
+    </div>
+    {% endif %}
+</section>

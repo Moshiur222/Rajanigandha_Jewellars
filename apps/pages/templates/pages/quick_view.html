@@ -1,0 +1,1096 @@
+{% extends "base/base.html" %}
+{% load custom_filters %}
+{% block extra_meta %}
+
+<title>{{ seo.meta_title }}</title>
+
+<meta name="description"
+      content="{{ seo.meta_description }}">
+
+<meta name="keywords"
+      content="{{ seo.meta_keywords }}">
+
+<!-- OPEN GRAPH -->
+<meta property="og:type" content="website">
+
+<meta property="og:title"
+      content="{{ seo.meta_title }}">
+
+<meta property="og:description"
+      content="{{ seo.meta_description }}">
+
+<meta property="og:url"
+      content="{{ seo.meta_url }}">
+
+<meta property="og:image"
+      content="{{ seo.meta_image }}">
+
+<meta property="og:image:secure_url"
+      content="{{ seo.meta_image }}">
+
+<meta property="og:image:type"
+      content="image/jpeg">
+
+<meta property="og:image:width"
+      content="1200">
+
+<meta property="og:image:height"
+      content="630">
+
+<!-- TWITTER -->
+<meta name="twitter:card"
+      content="summary_large_image">
+
+<meta name="twitter:title"
+      content="{{ seo.meta_title }}">
+
+<meta name="twitter:description"
+      content="{{ seo.meta_description }}">
+
+<meta name="twitter:image"
+      content="{{ seo.meta_image }}">
+
+{% endblock extra_meta %}
+
+{% block page_css %}
+<style>
+:root{
+    --primary-color:var(--black);
+    --accent-color:var(--gold);
+    --gold-color:var(--gold);
+    --border-color:var(--border);
+    --bg-light:var(--card);
+    --text-dark:var(--text);
+    --text-medium:var(--muted);
+    --text-light:var(--muted);
+    --danger-color:#c01834;
+    --success-color:#0a9b57;
+    --shadow-sm:var(--shadow);
+    --shadow-md:var(--shadow);
+    --shadow-lg:var(--shadow);
+    --radius-sm:12px;
+    --radius-md:18px;
+    --radius-lg:24px;
+    --transition:all 0.3s ease;
+}
+
+.product-detail-page{
+    padding:60px 6%;
+    background:var(--bg);
+    max-width:1400px;
+    margin:0 auto;
+    position:relative;
+}
+
+.breadcrumb{
+    font-size:13px;
+    margin-bottom:30px;
+    color:var(--text-light);
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.breadcrumb a{
+    color:var(--text-medium);
+    text-decoration:none;
+    transition:var(--transition);
+}
+
+.breadcrumb a:hover{
+    color:var(--accent-color);
+}
+
+.breadcrumb .separator{
+    color:var(--border);
+    margin:0 4px;
+}
+
+.breadcrumb .current{
+    color:var(--text-dark);
+    font-weight:600;
+}
+
+.close-product{
+    position:fixed;
+    top:85px;
+    right:30px;
+    background:var(--card);
+    border:1px solid var(--border);
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    cursor:pointer;
+    box-shadow:var(--shadow-md);
+    z-index:99;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:var(--transition);
+    font-size:18px;
+    color:var(--text-medium);
+}
+
+.close-product:hover{
+    background:var(--gold);
+    color:#fff;
+    border-color:var(--gold);
+    transform:rotate(90deg);
+}
+
+.detail-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:50px;
+    align-items:start;
+    margin-bottom:60px;
+}
+
+.detail-image-section{
+    position:sticky;
+    top:100px;
+}
+
+.detail-image-box{
+    border:1px solid var(--border-color);
+    min-height:450px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--card);
+    border-radius:var(--radius-md);
+    overflow:hidden;
+    position:relative;
+    transition:var(--transition);
+}
+
+.detail-image-box:hover{
+    box-shadow:var(--shadow-md);
+}
+
+.detail-image-box img{
+    max-width:90%;
+    max-height:450px;
+    object-fit:contain;
+    transition:transform 0.5s ease;
+}
+
+.detail-image-box:hover img{
+    transform:scale(1.05);
+}
+
+.image-badges{
+    position:absolute;
+    top:15px;
+    left:15px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    z-index:5;
+}
+
+.badge{
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+}
+
+.badge-new{
+    background:var(--gold);
+    color:#fff;
+}
+
+.badge-sale{
+    background:var(--danger-color);
+    color:#fff;
+}
+
+.badge-bestseller{
+    background:var(--gold-color);
+    color:#fff;
+}
+
+.image-thumbnails{
+    display:flex;
+    gap:10px;
+    margin-top:15px;
+    justify-content:center;
+}
+
+.thumbnail{
+    width:70px;
+    height:70px;
+    border:2px solid var(--border-color);
+    border-radius:var(--radius-sm);
+    cursor:pointer;
+    overflow:hidden;
+    transition:var(--transition);
+    opacity:0.7;
+    background:var(--card);
+}
+
+.thumbnail:hover{
+    border-color:var(--gold);
+    opacity:1;
+}
+
+.thumbnail.active{
+    border-color:var(--gold);
+    opacity:1;
+}
+
+.thumbnail img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.detail-info{
+    padding-right:20px;
+}
+
+.product-title{
+    font-size:32px;
+    margin-bottom:8px;
+    color:var(--text-dark);
+    font-family:'Playfair Display', Georgia, serif;
+    line-height:1.3;
+    font-weight:700;
+}
+
+.product-meta{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+}
+
+.design-no{
+    font-size:13px;
+    color:var(--gold);
+    font-weight:600;
+    background:rgba(197,155,67,0.12);
+    padding:4px 12px;
+    border-radius:20px;
+}
+
+.product-rating{
+    display:flex;
+    align-items:center;
+    gap:5px;
+}
+
+.stars{
+    color:var(--gold);
+    font-size:14px;
+}
+
+.rating-count{
+    font-size:13px;
+    color:var(--text-light);
+}
+
+.product-sku{
+    font-size:12px;
+    color:var(--text-light);
+    font-family:monospace;
+}
+
+.weight-row{
+    display:flex;
+    gap:12px;
+    margin-bottom:25px;
+    flex-wrap:wrap;
+}
+
+.weight-box{
+    border:2px solid var(--border);
+    padding:12px 18px;
+    text-align:center;
+    min-width:120px;
+    border-radius:var(--radius-sm);
+    transition:var(--transition);
+    background:var(--card);
+}
+
+.weight-box:hover{
+    background:var(--gold);
+    color:#fff;
+    border-color:var(--gold);
+    transform:translateY(-2px);
+}
+
+.weight-box .label{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    margin-bottom:5px;
+    opacity:0.7;
+}
+
+.weight-box .value{
+    font-size:16px;
+    font-weight:700;
+}
+
+.feature-row{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.feature-card{
+    background:var(--card);
+    text-align:center;
+    padding:20px 15px;
+    border-radius:var(--radius-md);
+    transition:var(--transition);
+    border:1px solid var(--border);
+}
+
+.feature-card:hover{
+    border-color:var(--gold);
+    box-shadow:var(--shadow-sm);
+    transform:translateY(-2px);
+}
+
+.feature-card i{
+    font-size:28px;
+    margin-bottom:10px;
+    color:var(--gold);
+    display:block;
+}
+
+.feature-card span{
+    display:block;
+    font-size:12px;
+    color:var(--text-medium);
+    font-weight:500;
+    line-height:1.4;
+}
+
+.price-section{
+    margin:25px 0;
+    padding:25px;
+    background:var(--card);
+    border-radius:var(--radius-md);
+    border:1px solid var(--border-color);
+}
+
+.price-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.price-header h4{
+    font-size:16px;
+    color:var(--text-dark);
+    font-weight:700;
+}
+
+.price-breakdown{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    padding:15px 0;
+    border-bottom:1px solid var(--border-color);
+}
+
+.price-item{
+    text-align:center;
+}
+
+.price-item .label{
+    font-size:11px;
+    color:var(--text-light);
+    text-transform:uppercase;
+    margin-bottom:4px;
+}
+
+.price-item .amount{
+    font-size:15px;
+    color:var(--text-dark);
+    font-weight:700;
+}
+
+.price-separator{
+    color:var(--text-light);
+    font-size:20px;
+    font-weight:300;
+}
+
+.final-price-box{
+    margin-top:15px;
+    text-align:center;
+    padding:18px;
+    background:var(--bg);
+    border-radius:var(--radius-sm);
+    border:2px solid var(--gold);
+}
+
+.final-price{
+    font-size:36px;
+    font-weight:800;
+    color:var(--gold);
+    line-height:1;
+}
+
+.final-price .currency{
+    font-size:24px;
+    vertical-align:super;
+}
+
+.save-badge{
+    display:inline-block;
+    background:var(--gold);
+    color:#fff;
+    padding:4px 12px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:600;
+    margin-top:8px;
+}
+
+.emi-section{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:12px 0;
+    margin:15px 0;
+}
+
+.emi-badge{
+    background:var(--gold);
+    color:#fff;
+    padding:4px 10px;
+    border-radius:4px;
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+}
+
+.emi-text{
+    font-size:14px;
+    font-weight:600;
+    color:var(--text-dark);
+}
+
+.emi-link{
+    color:var(--gold);
+    text-decoration:underline;
+    cursor:pointer;
+    font-size:13px;
+    margin-left:auto;
+}
+
+.action-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+    margin:25px 0;
+}
+
+.detail-btn{
+    border:none;
+    padding:16px 24px;
+    font-weight:700;
+    cursor:pointer;
+    text-align:center;
+    text-decoration:none;
+    border-radius:var(--radius-sm);
+    text-transform:uppercase;
+    font-size:14px;
+    letter-spacing:1px;
+    transition:var(--transition);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+}
+
+.add-to-cart-btn{
+    background:var(--black);
+    color:#fff;
+}
+
+.add-to-cart-btn:hover{
+    background:var(--gold-dark);
+    transform:translateY(-2px);
+    box-shadow:var(--shadow-md);
+}
+
+.buy-now-btn{
+    background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+    color:#fff;
+}
+
+.buy-now-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:var(--shadow-md);
+}
+
+.wishlist-btn{
+    border:2px solid var(--border-color);
+    background:var(--card);
+    color:var(--text-dark);
+    width:100%;
+    grid-column:1 / -1;
+}
+
+.wishlist-btn:hover{
+    border-color:var(--danger-color);
+    color:var(--danger-color);
+}
+
+.wishlist-btn.active{
+    background:var(--danger-color);
+    color:#fff;
+    border-color:var(--danger-color);
+}
+
+.info-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px 30px;
+    margin-top:25px;
+    padding:20px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius-md);
+}
+
+.info-item{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    font-size:13px;
+    color:var(--text-medium);
+    line-height:1.5;
+}
+
+.info-item i{
+    width:32px;
+    height:32px;
+    border:1px solid var(--border-color);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    flex-shrink:0;
+    background:var(--bg);
+    color:var(--gold);
+}
+
+.info-item .info-content strong{
+    display:block;
+    color:var(--text-dark);
+    margin-bottom:2px;
+    font-size:13px;
+}
+
+.product-note{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:20px;
+    padding:12px 15px;
+    background:rgba(197,155,67,0.08);
+    border-left:3px solid var(--gold);
+    border-radius:var(--radius-sm);
+    font-size:13px;
+    color:var(--gold);
+}
+
+.product-note i{
+    font-size:16px;
+}
+
+.help-section{
+    margin-top:60px;
+    padding:40px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    text-align:center;
+}
+
+.help-section h3{
+    font-size:24px;
+    color:var(--text-dark);
+    margin-bottom:10px;
+    font-family:'Playfair Display', Georgia, serif;
+}
+
+.help-section > p{
+    color:var(--text-medium);
+    font-size:14px;
+    margin-bottom:30px;
+    max-width:600px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.help-buttons{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+    max-width:800px;
+    margin:0 auto;
+}
+
+.help-btn{
+    padding:18px 24px;
+    text-align:center;
+    color:var(--text-dark);
+    text-decoration:none;
+    border-radius:var(--radius-md);
+    font-size:14px;
+    font-weight:600;
+    transition:var(--transition);
+    border:2px solid var(--border-color);
+    background:var(--bg);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+}
+
+.help-btn:hover{
+    border-color:var(--gold);
+    transform:translateY(-3px);
+    box-shadow:var(--shadow-md);
+}
+
+.help-btn i{
+    font-size:24px;
+    color:var(--gold);
+}
+
+.help-btn.facebook i{
+    color:#1877f2;
+}
+
+.help-btn.whatsapp i{
+    color:#25d366;
+}
+
+.help-btn.phone i{
+    color:var(--gold);
+}
+
+.stock-status{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:4px 12px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:600;
+}
+
+.stock-status.in-stock{
+    background:rgba(10,155,87,0.1);
+    color:var(--success-color);
+}
+
+.stock-status.out-of-stock{
+    background:rgba(192,24,52,0.1);
+    color:var(--danger-color);
+}
+
+.stock-status .dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:currentColor;
+}
+
+@media (max-width:1024px){
+    .detail-grid{
+        gap:30px;
+    }
+
+    .detail-image-section{
+        position:static;
+    }
+}
+
+@media (max-width:900px){
+    .product-detail-page{
+        padding:40px 4%;
+    }
+
+    .detail-grid{
+        grid-template-columns:1fr;
+        gap:30px;
+    }
+
+    .detail-info{
+        padding-right:0;
+    }
+
+    .feature-row,
+    .help-buttons{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .product-title{
+        font-size:28px;
+    }
+}
+
+@media (max-width:576px){
+    .product-detail-page{
+        padding:25px 3%;
+    }
+
+    .product-title{
+        font-size:22px;
+    }
+
+    .feature-row,
+    .action-row,
+    .info-grid,
+    .help-buttons{
+        grid-template-columns:1fr;
+    }
+
+    .final-price{
+        font-size:28px;
+    }
+
+    .help-section{
+        padding:30px 20px;
+    }
+
+    .close-product{
+        top:20px;
+        right:15px;
+        width:38px;
+        height:38px;
+    }
+
+    .detail-image-box{
+        min-height:300px;
+    }
+
+    .detail-image-box img{
+        max-height:300px;
+    }
+}
+
+@keyframes fadeInUp{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.detail-grid{
+    animation:fadeInUp 0.5s ease-out;
+}
+
+@media print{
+    .close-product,
+    .action-row,
+    .help-section{
+        display:none;
+    }
+}
+</style>
+{% endblock page_css %}
+
+{% block content %}
+
+<button class="close-product" onclick="window.location.href='{{ next_url }}'" title="Close">
+    <i class="fa-solid fa-xmark"></i>
+</button>
+
+<section class="product-detail-page">
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="{% url 'pages:home' %}">Home</a>
+        <span class="separator">/</span>
+        {% if menue_slug and category_slug %}
+            <a href="{% url 'pages:category_products' menue_slug category_slug %}">
+                {{ metal.get_name_display }} - {{ category.get_name_display }}
+            </a>
+        {% else %}
+            <span>{{ metal }} - {{ category }}</span>
+        {% endif %}
+        <span class="separator">/</span>
+        {% if subcategory_slug %}
+            <a href="{% url 'pages:subcategory_products' subcategory_slug %}">
+                {{ subcategory }}
+            </a>
+        {% else %}
+            <span>{{ subcategory }}</span>
+        {% endif %}>
+        <span class="separator">/</span>
+        <span class="current">{{ name }}</span>
+    </nav>
+
+    <div class="detail-grid">
+
+        <div class="detail-image-section">
+            <div class="detail-image-box">
+
+                <div class="image-badges">
+                    {% if on_sale %}
+                    <span class="badge badge-sale">Sale</span>
+                    {% endif %}
+                </div>
+
+                <img src="{{ image }}" alt="{{ name }}" id="mainImage">
+            </div>
+
+            {% if additional_images %}
+            <div class="image-thumbnails">
+                <div class="thumbnail active" onclick="changeImage('{{ image }}', this)">
+                    <img src="{{ image }}" alt="{{ name }}">
+                </div>
+
+                {% for img in additional_images %}
+                <div class="thumbnail" onclick="changeImage('{{ img.url }}', this)">
+                    <img src="{{ img.url }}" alt="{{ name }}">
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="detail-info">
+
+            <h1 class="product-title">{{ name }}</h1>
+
+            <div class="product-meta">
+                <span class="design-no">
+                    <i class="fa-regular fa-gem"></i>
+                    Design No: {{ sku }}
+                </span>
+
+                <div class="product-rating">
+                    <div class="stars">
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star-half-stroke"></i>
+                    </div>
+                    <span class="rating-count">(4.5/5)</span>
+                </div>
+
+                <span class="product-sku">SKU: {{ sku }}</span>
+            </div>
+
+            <div class="weight-row">
+                <div class="weight-box">
+                    <div class="label">Net Weight</div>
+                    <div class="value">{{ weight }} gms</div>
+                </div>
+
+                <div class="weight-box">
+                    <div class="label">Gross Weight</div>
+                    <div class="value">{{ weight }} gms</div>
+                </div>
+
+                <div class="weight-box">
+                    <div class="label">Category</div>
+                    <div class="value">{{ category.get_name_display }}</div>
+                </div>
+
+                <div class="weight-box">
+                    <div class="label">Metal</div>
+                    <div class="value">{{ metal.get_name_display|default:"Gold" }}</div>
+                </div>
+            </div>
+
+            <div class="feature-row">
+                <div class="feature-card">
+                    <i class="fa-solid fa-truck-fast"></i>
+                    <span>Free Shipping<br>Across Country</span>
+                </div>
+
+                <div class="feature-card">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                    <span>Easy Exchange<br>Within 30 Days</span>
+                </div>
+
+                <div class="feature-card">
+                    <i class="fa-solid fa-certificate"></i>
+                    <span>Certified<br>Jewellery</span>
+                </div>
+
+                <div class="feature-card">
+                    <i class="fa-solid fa-award"></i>
+                    <span>Lifetime<br>Servicing</span>
+                </div>
+            </div>
+
+            <div class="stock-status {% if stock > 0 %}in-stock{% else %}out-of-stock{% endif %}">
+                <span class="dot"></span>
+                {% if stock > 0 %}
+                    In Stock ({{ stock }} available)
+                {% else %}
+                    Out of Stock
+                {% endif %}
+            </div>
+
+            <div class="price-section">
+                <div class="price-header">
+                    <h4>Price Details</h4>
+                    {% if discount %}
+                    <span class="save-badge">Save {{ discount }}%</span>
+                    {% endif %}
+                </div>
+
+                <div class="price-breakdown">
+                    <div class="price-item">
+                        <div class="label">Product Cost</div>
+                        <div class="amount">৳{{ old_price|bd_currency }}</div>
+                    </div>
+
+                    <span class="price-separator">+</span>
+
+                    <div class="price-item">
+                        <div class="label">Making Charges</div>
+                        <div class="amount">Included</div>
+                    </div>
+
+                    <span class="price-separator">+</span>
+
+                    <div class="price-item">
+                        <div class="label">VAT</div>
+                        <div class="amount">Included</div>
+                    </div>
+
+                    <span class="price-separator">=</span>
+
+                    <div class="price-item">
+                        <div class="label">Total</div>
+                        <div class="amount">৳{{ price|bd_currency }}</div>
+                    </div>
+                </div>
+
+                <div class="final-price-box">
+                    <div class="final-price">
+                        <span class="currency">৳</span>{{ price|bd_currency }}
+                    </div>
+                    <div style="font-size:13px;color:var(--text-light);margin-top:5px;">
+                        Inclusive of all taxes
+                    </div>
+                </div>
+            </div>
+
+            <div class="emi-section">
+                <span class="emi-badge">EMI</span>
+                <span class="emi-text">Starting from ৳{{ emi_price|default:"2,500" }}/month</span>
+                <span class="emi-link" onclick="showEMIPlans()">View Plans →</span>
+            </div>
+
+            <div class="action-row">
+                
+                <button 
+                    class="detail-btn add-to-cart-btn add-cart-btn"
+                    data-url="{{ add_cart_url }}">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    Add To Cart
+                </button>
+
+                <button 
+                    class="detail-btn buy-now-btn"
+                    data-url="{{ add_cart_url }}"
+                    data-checkout="{{ checkout_url }}">
+                    <i class="fa-regular fa-gem"></i>
+                    Book Now
+                </button>
+
+                <button 
+                    class="detail-btn wishlist-btn add-wishlist-btn"
+                    data-url="{{ wishlist_url }}">
+                    <i class="fa-regular fa-heart"></i>
+                    Add to Wishlist
+                </button>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <i class="fa-solid fa-truck"></i>
+                    <div class="info-content">
+                        <strong>Free Shipping</strong>
+                        Delivery within 3-5 business days
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <div class="info-content">
+                        <strong>Secure Payment</strong>
+                        100% secure payment gateway
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <i class="fa-solid fa-gift"></i>
+                    <div class="info-content">
+                        <strong>Loyalty Points</strong>
+                        Earn points on every purchase
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <i class="fa-solid fa-headset"></i>
+                    <div class="info-content">
+                        <strong>24/7 Support</strong>
+                        Call us at +880 1234-567890
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-note">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>{{ note|default:"Note: Resizing not available for platinum jewellery. Prices may vary based on gold rate." }}</span>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="help-section">
+        <h3>Need Help Deciding?</h3>
+        <p>Our jewellery experts are here to help you make the perfect choice. Reach out to us through any of these channels.</p>
+
+        <div class="help-buttons">
+            <a href="#" class="help-btn facebook">
+                <i class="fa-brands fa-facebook"></i>
+                <span>Message on Facebook</span>
+            </a>
+
+            <a href="https://wa.me/your_number" class="help-btn whatsapp" target="_blank">
+                <i class="fa-brands fa-whatsapp"></i>
+                <span>Chat on WhatsApp</span>
+            </a>
+
+            <a href="tel:+8801234567890" class="help-btn phone">
+                <i class="fa-solid fa-phone"></i>
+                <span>Talk to Our Experts</span>
+            </a>
+        </div>
+    </div>
+
+</section>
+
+{% endblock content %}

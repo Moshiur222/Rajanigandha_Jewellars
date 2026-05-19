@@ -1,0 +1,21 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Rajanigandha Jewellers{% endblock %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{% static 'css/pages/home.css' %}">
+{% endblock %}
+
+{% block content %}
+
+{% include "sections/hero.html" %}
+<div class = "cart_border">
+    {% include "sections/categories.html" %}
+    {% include "sections/featured.html" %}
+    {% include "sections/products.html" %}
+    {% include "sections/sale.html" %}
+</div>
+{% include "sections/newsletter.html" %}
+
+{% endblock %}

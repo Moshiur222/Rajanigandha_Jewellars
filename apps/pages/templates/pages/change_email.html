@@ -1,0 +1,354 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<section class="change-email-page">
+    <div class="change-email-card">
+
+        <div class="change-logo-box">
+            <a href="/">
+                <img 
+                    src="{% static 'images/logo/logo.png' %}" 
+                    alt="Rajanigandha Jewellers" 
+                    class="change-logo"
+                >
+            </a>
+        </div>
+
+        <div class="change-icon">
+            <i class="fas fa-envelope"></i>
+        </div>
+
+        <div class="change-header">
+            <h2>Change Email</h2>
+            <p>
+                Your current email is
+                <strong>{{ email }}</strong>
+            </p>
+        </div>
+
+        <form method="POST" class="change-form">
+            {% csrf_token %}
+
+            <div class="change-field">
+                <label for="email">New Email Address</label>
+
+                <div class="change-input-wrapper">
+                    <i class="fas fa-envelope-open"></i>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter new email address"
+                        required
+                        autocomplete="email"
+                    >
+                </div>
+            </div>
+
+            <button type="submit" class="change-submit-btn">
+                <span>Change Email & Send OTP</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </form>
+
+        <div class="change-footer">
+            <a href="{% url 'pages:verify_otp' %}">
+                <i class="fas fa-arrow-left"></i>
+                Back to Verification
+            </a>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}
+
+
+{% block page_css %}
+<style>
+    .change-email-page {
+        min-height: 100vh;
+        padding: 50px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background:
+            radial-gradient(circle at top right, rgba(197, 155, 67, 0.16), transparent 36%),
+            radial-gradient(circle at bottom left, rgba(197, 155, 67, 0.10), transparent 36%),
+            var(--bg);
+    }
+
+    .change-email-card {
+        width: 100%;
+        max-width: 470px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        padding: 42px 36px;
+        text-align: center;
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.10);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .change-email-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 180px;
+        height: 4px;
+        background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        border-radius: 50px;
+    }
+
+    .change-logo-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 24px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .change-logo-box a {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-decoration: none;
+    }
+
+    .change-logo {
+        max-width: 260px;
+        width: 100%;
+        height: 62px;
+        object-fit: contain;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .change-icon {
+        width: 76px;
+        height: 76px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(197,155,67,0.16), rgba(197,155,67,0.05));
+        color: var(--gold);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        border: 1px solid rgba(197,155,67,0.25);
+    }
+
+    .change-header h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 32px;
+        font-weight: 800;
+        color: var(--text);
+        margin: 0 0 10px;
+    }
+
+    .change-header p {
+        margin: 0 auto;
+        max-width: 360px;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.7;
+    }
+
+    .change-header strong {
+        color: var(--text);
+        font-weight: 700;
+        word-break: break-word;
+    }
+
+    .change-form {
+        margin-top: 30px;
+        text-align: left;
+    }
+
+    .change-field label {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .change-input-wrapper {
+        position: relative;
+        width: 100%;
+    }
+
+    .change-input-wrapper i {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gold);
+        font-size: 17px;
+        z-index: 1;
+    }
+
+    .change-input-wrapper input {
+        width: 100%;
+        height: 58px;
+        border: 1px solid var(--border);
+        background: var(--bg);
+        border-radius: 16px;
+        padding: 0 18px 0 52px;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text);
+        outline: none;
+        transition: 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .change-input-wrapper input::placeholder {
+        color: var(--muted);
+        opacity: 0.65;
+    }
+
+    .change-input-wrapper input:focus {
+        border-color: var(--gold);
+        box-shadow: 0 0 0 4px rgba(197, 155, 67, 0.12);
+    }
+
+    .change-submit-btn {
+        width: 100%;
+        min-height: 56px;
+        margin-top: 20px;
+        border: none;
+        border-radius: 16px;
+        background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+        color: #fff;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 14px 18px;
+        transition: 0.3s ease;
+    }
+
+    .change-submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 35px rgba(197, 155, 67, 0.28);
+    }
+
+    .change-footer {
+        margin-top: 28px;
+        padding-top: 22px;
+        border-top: 1px solid var(--border);
+    }
+
+    .change-footer a {
+        color: var(--text);
+        border: 1px solid var(--border);
+        background: var(--bg);
+        padding: 12px 18px;
+        border-radius: 14px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: 0.3s ease;
+    }
+
+    .change-footer a:hover {
+        color: var(--gold);
+        border-color: var(--gold);
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .change-email-page {
+            padding: 40px 16px;
+        }
+
+        .change-email-card {
+            max-width: 430px;
+            padding: 38px 28px;
+            border-radius: 24px;
+        }
+
+        .change-header h2 {
+            font-size: 28px;
+        }
+
+        .change-logo {
+            max-width: 230px;
+            height: 56px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .change-email-page {
+            padding: 28px 14px;
+            align-items: flex-start;
+        }
+
+        .change-email-card {
+            padding: 32px 20px;
+            border-radius: 22px;
+            margin-top: 20px;
+        }
+
+        .change-logo {
+            max-width: 210px;
+            height: 52px;
+        }
+
+        .change-icon {
+            width: 66px;
+            height: 66px;
+            font-size: 26px;
+        }
+
+        .change-header h2 {
+            font-size: 25px;
+        }
+
+        .change-header p {
+            font-size: 14px;
+        }
+
+        .change-input-wrapper input {
+            height: 56px;
+        }
+
+        .change-submit-btn {
+            font-size: 15px;
+        }
+
+        .change-footer a {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 380px) {
+        .change-email-card {
+            padding: 28px 16px;
+        }
+
+        .change-logo {
+            max-width: 190px;
+        }
+
+        .change-submit-btn {
+            font-size: 14px;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,599 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="cart_border">
+<section class="section">
+
+<form method="POST" id="checkoutForm" novalidate>
+    {% csrf_token %}
+
+    <div class="checkout-layout">
+
+        <div class="checkout-main">
+
+            <div class="checkout-card">
+                <div class="checkout-card-header">
+                    <div class="step-number">1</div>
+                    <h3>Contact Information</h3>
+                </div>
+
+                <div class="form-grid-2">
+
+                    <div class="input-group">
+                        <label>Full Name *</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user"></i>
+                            <input
+                                type="text"
+                                name="full_name"
+                                value="{{ request.user.get_full_name }}"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Phone Number *</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-phone"></i>
+                            <input
+                                type="tel"
+                                name="phone"
+                                value="{{ profile.phone }}"
+                                placeholder="+880 1XXX XXXXXX"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label>Email Address *</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope"></i>
+                            <input
+                                type="email"
+                                name="email"
+                                value="{{ request.user.email }}"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="checkout-card">
+                <div class="checkout-card-header">
+                    <div class="step-number">2</div>
+                    <h3>Shipping Address</h3>
+                </div>
+
+                <div class="form-grid-2">
+
+                    <div class="input-group">
+                        <label>City *</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-city"></i>
+
+                            <select name="city" required>
+                                <option value="">Select City</option>
+
+                                <option value="dhaka" {% if profile.city == "dhaka" %}selected{% endif %}>
+                                    Dhaka
+                                </option>
+
+                                <option value="chittagong" {% if profile.city == "chittagong" %}selected{% endif %}>
+                                    Chittagong
+                                </option>
+
+                                <option value="sylhet" {% if profile.city == "sylhet" %}selected{% endif %}>
+                                    Sylhet
+                                </option>
+
+                                <option value="khulna" {% if profile.city == "khulna" %}selected{% endif %}>
+                                    Khulna
+                                </option>
+
+                                <option value="rajshahi" {% if profile.city == "rajshahi" %}selected{% endif %}>
+                                    Rajshahi
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Area *</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <input
+                                type="text"
+                                name="area"
+                                value="{{ profile.area }}"
+                                placeholder="Gulshan, Banani, etc."
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>ZIP Code</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-map-pin"></i>
+                            <input
+                                type="text"
+                                name="zip_code"
+                                value="{{ profile.zip_code }}"
+                                placeholder="1205"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label>Full Address *</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-home"></i>
+                            <textarea
+                                name="address"
+                                rows="3"
+                                required
+                            >{{ profile.address }}</textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="input-group" style="margin-top:16px;">
+                    <label>Delivery Note</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-sticky-note"></i>
+                        <textarea
+                            name="delivery_note"
+                            rows="2"
+                            placeholder="Any special delivery instruction"
+                        ></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checkout-card">
+                <div class="checkout-card-header">
+                    <div class="step-number">3</div>
+                    <h3>Payment Method</h3>
+                </div>
+
+                <div class="payment-methods">
+
+                    <label class="payment-option">
+                        <input type="radio" name="payment_method" value="cod" checked>
+                        <div class="payment-content">
+                            <div class="payment-icon">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="payment-details">
+                                <strong>Cash on Delivery</strong>
+                                <span>Pay when you receive your order</span>
+                            </div>
+                            <div class="payment-check"></div>
+                        </div>
+                    </label>
+
+                    <label class="payment-option">
+                        <input type="radio" name="payment_method" value="bkash">
+                        <div class="payment-content">
+                            <div class="payment-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <div class="payment-details">
+                                <strong>bKash</strong>
+                                <span>Pay with bKash mobile wallet</span>
+                            </div>
+                            <div class="payment-check"></div>
+                        </div>
+                    </label>
+
+                    <label class="payment-option">
+                        <input type="radio" name="payment_method" value="nagad">
+                        <div class="payment-content">
+                            <div class="payment-icon">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                            <div class="payment-details">
+                                <strong>Nagad</strong>
+                                <span>Pay with Nagad mobile wallet</span>
+                            </div>
+                            <div class="payment-check"></div>
+                        </div>
+                    </label>
+
+                    <label class="payment-option">
+                        <input type="radio" name="payment_method" value="card">
+                        <div class="payment-content">
+                            <div class="payment-icon">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="payment-details">
+                                <strong>Card Payment</strong>
+                                <span>Visa, Mastercard, Amex</span>
+                            </div>
+                            <div class="payment-check"></div>
+                        </div>
+                    </label>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="checkout-sidebar">
+
+            <div class="order-summary-card">
+
+                <h3>Order Summary</h3>
+
+                <div class="order-items">
+
+                    {% for item in cart_items %}
+
+                    <div class="order-item">
+                        <div class="order-item-image">
+                            {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                            {% endif %}
+
+                            <span class="order-item-qty">
+                                {{ item.quantity }}
+                            </span>
+                        </div>
+
+                        <div class="order-item-details">
+                            <h4>{{ item.product.name }}</h4>
+
+                            <span class="order-item-meta">
+                                {{ item.product.weight }} Gram
+                                {% if item.product.category %}
+                                    • {{ item.product.category.get_name_display }}
+                                {% endif %}
+                            </span>
+                        </div>
+
+                        <div class="order-item-price">
+                            ৳{{ item.item_total|floatformat:2 }}
+                        </div>
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+                <div class="price-breakdown">
+
+                    <div class="breakdown-row">
+                        <span>Subtotal ({{ total_items }} items)</span>
+                        <span>৳{{ subtotal|floatformat:2 }}</span>
+                    </div>
+
+                    <div class="breakdown-row">
+                        <span>Delivery Charge</span>
+                        <span>৳{{ delivery_charge|floatformat:2 }}</span>
+                    </div>
+
+                    {% if discount > 0 %}
+                    <div class="breakdown-row discount">
+                        <span>Discount</span>
+                        <span>−৳{{ discount|floatformat:2 }}</span>
+                    </div>
+                    {% endif %}
+
+                    <div class="breakdown-row total">
+                        <span>Total</span>
+                        <span>৳{{ total|floatformat:2 }}</span>
+                    </div>
+
+                </div>
+
+                <button type="submit" class="gold-btn place-order-btn" id="placeOrderBtn">
+                    <i class="fas fa-lock"></i>
+                    Place Order
+                </button>
+
+                <div class="secure-checkout">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>Secure SSL encrypted checkout</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</form>
+
+</section>
+</div>
+
+{% endblock content %}
+
+{% block page_css %}
+<style>
+.checkout-layout {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 30px;
+    align-items: start;
+}
+
+.checkout-main {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.checkout-card,
+.order-summary-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 28px;
+}
+
+.checkout-card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--border);
+}
+
+.step-number {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-wrapper i {
+    position: absolute;
+    left: 16px;
+    top: 16px;
+    color: var(--muted);
+}
+
+.input-wrapper input,
+.input-wrapper select,
+.input-wrapper textarea {
+    width: 100%;
+    padding: 14px 16px 14px 46px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    border-radius: 12px;
+    font-size: 15px;
+    outline: none;
+}
+
+.payment-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.payment-option input {
+    display: none;
+}
+
+.payment-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    background: var(--bg);
+}
+
+.payment-option input:checked + .payment-content {
+    border-color: var(--gold);
+    background: rgba(197,155,67,.06);
+}
+
+.payment-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(197,155,67,.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+}
+
+.payment-details {
+    flex: 1;
+}
+
+.payment-details strong {
+    display: block;
+}
+
+.payment-details span {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.checkout-sidebar {
+    position: sticky;
+    top: 100px;
+}
+
+.order-items {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.order-item {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+}
+
+.order-item-image {
+    width: 64px;
+    height: 64px;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    background: #f6f1e9;
+    flex-shrink: 0;
+}
+
+.order-item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.order-item-qty {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 22px;
+    height: 22px;
+    background: var(--gold);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.order-item-details {
+    flex: 1;
+}
+
+.order-item-details h4 {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.order-item-meta {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.order-item-price {
+    color: var(--gold);
+    font-weight: 700;
+}
+
+.price-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+.breakdown-row.total {
+    font-size: 18px;
+    font-weight: 700;
+    padding-top: 14px;
+    border-top: 2px solid var(--border);
+}
+
+.breakdown-row.total span:last-child {
+    color: var(--gold);
+}
+
+.place-order-btn {
+    width: 100%;
+    padding: 16px;
+}
+
+.secure-checkout {
+    margin-top: 14px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+@media(max-width:1024px) {
+    .checkout-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .checkout-sidebar {
+        position: static;
+    }
+}
+
+@media(max-width:640px) {
+    .form-grid-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .full-width {
+        grid-column: 1;
+    }
+}
+</style>
+{% endblock page_css %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const checkoutForm = document.getElementById("checkoutForm");
+    const placeOrderBtn = document.getElementById("placeOrderBtn");
+
+    if (checkoutForm && placeOrderBtn) {
+        checkoutForm.addEventListener("submit", function () {
+            placeOrderBtn.disabled = true;
+            placeOrderBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        });
+    }
+});
+</script>
+{% endblock extra_js %}

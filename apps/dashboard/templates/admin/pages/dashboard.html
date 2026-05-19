@@ -1,0 +1,374 @@
+{% extends 'admin/base/base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block admin_css %}
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+<style>
+.dashboard-title{
+    margin-bottom:25px;
+}
+
+.dashboard-title h1{
+    font-size:30px;
+    font-weight:900;
+    color:var(--text);
+    margin:0;
+}
+
+.dashboard-title p{
+    color:var(--muted);
+    margin-top:6px;
+}
+
+.status-badge.pending{background:rgba(0,0,0,.08);color:#222;}
+.status-badge.confirmed{background:rgba(13,110,253,.12);color:#0d6efd;}
+.status-badge.processing{background:rgba(255,152,0,.14);color:#d98200;}
+.status-badge.shipped{background:rgba(13,110,253,.12);color:#0d6efd;}
+.status-badge.delivered{background:rgba(10,155,87,.12);color:#0a9b57;}
+.status-badge.cancelled{background:rgba(220,53,69,.12);color:#dc3545;}
+
+.chart-card{
+    position:relative;
+}
+
+.chart-card .card-body{
+    height:340px;
+}
+
+#salesChart{
+    max-height:280px !important;
+    max-width:280px !important;
+    margin:auto;
+}
+
+#revenueChart{
+    max-height:320px !important;
+}
+</style>
+{% endblock admin_css %}
+
+{% block admin_main %}
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+        <div class="stat-icon bg-primary">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ total_users }}</h3>
+            <p>Total Customers</p>
+        </div>
+        <div class="stat-footer">
+            <span class="stat-trend up">
+                <i class="fas fa-user-plus"></i>
+                Members
+            </span>
+            <span class="stat-period">Registered users</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon bg-success">
+            <i class="fas fa-sack-dollar"></i>
+        </div>
+        <div class="stat-content">
+            <h3>৳{{ total_revenue|floatformat:2 }}</h3>
+            <p>Total Revenue</p>
+        </div>
+        <div class="stat-footer">
+            <span class="stat-trend up">
+                <i class="fas fa-arrow-up"></i>
+                Delivered
+            </span>
+            <span class="stat-period">Completed orders</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon bg-warning">
+            <i class="fas fa-shopping-cart"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ total_orders }}</h3>
+            <p>Total Orders</p>
+        </div>
+        <div class="stat-footer">
+            <span class="stat-trend down">
+                <i class="fas fa-clock"></i>
+                {{ pending_orders }}
+            </span>
+            <span class="stat-period">Pending orders</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon bg-danger">
+            <i class="fas fa-gem"></i>
+        </div>
+        <div class="stat-content">
+            <h3>{{ total_products }}</h3>
+            <p>Total Products</p>
+        </div>
+        <div class="stat-footer">
+            <span class="stat-trend up">
+                <i class="fas fa-heart"></i>
+                {{ wishlist_count }}
+            </span>
+            <span class="stat-period">Wishlist items</span>
+        </div>
+    </div>
+
+</div>
+
+<div class="charts-row">
+    <div class="chart-card">
+        <div class="card-header">
+            <h3>Revenue Overview</h3>
+        </div>
+        <div class="card-body">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-card">
+        <div class="card-header">
+            <h3>Order Summary</h3>
+        </div>
+        <div class="card-body">
+            <canvas id="salesChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="tables-row">
+
+    <div class="table-card">
+        <div class="card-header">
+            <h3>Recent Orders</h3>
+            <a href="{% url 'dashboard:orders' %}" class="btn btn-sm btn-primary">View All</a>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Products</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for order in recent_orders %}
+                        <tr>
+                            <td>#{{ order.order_id }}</td>
+
+                            <td>
+                                <div class="customer-info">
+                                    <div>
+                                        <strong>{{ order.full_name }}</strong><br>
+                                        <small>{{ order.phone }}</small>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>
+                                {% for item in order.items.all %}
+                                    {{ item.product_name }} × {{ item.quantity }}<br>
+                                {% empty %}
+                                    No product
+                                {% endfor %}
+                            </td>
+
+                            <td>৳{{ order.total_amount|floatformat:2 }}</td>
+
+                            <td>
+                                {% if order.status == 1 %}
+                                    <span class="status-badge pending">Pending</span>
+                                {% elif order.status == 2 %}
+                                    <span class="status-badge confirmed">Confirmed</span>
+                                {% elif order.status == 3 %}
+                                    <span class="status-badge processing">Processing</span>
+                                {% elif order.status == 4 %}
+                                    <span class="status-badge shipped">Shipped</span>
+                                {% elif order.status == 5 %}
+                                    <span class="status-badge delivered">Delivered</span>
+                                {% elif order.status == 6 %}
+                                    <span class="status-badge cancelled">Cancelled</span>
+                                {% endif %}
+                            </td>
+
+                            <td>{{ order.created_at|date:"d M Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6">No recent orders found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <div class="card-header">
+            <h3>Top Products</h3>
+        </div>
+
+        <div class="card-body">
+            <div class="product-list">
+                {% for product in top_products %}
+                <div class="product-item">
+                    <div class="product-img">
+                        <i class="fas fa-gem"></i>
+                    </div>
+
+                    <div class="product-info">
+                        <h4>{{ product.product_name }}</h4>
+                        <p>৳{{ product.total_amount|floatformat:2 }}</p>
+                    </div>
+
+                    <div class="product-sales">
+                        <span class="sales-count">{{ product.total_sales }}</span>
+                        <span class="sales-label">Sales</span>
+                    </div>
+                </div>
+                {% empty %}
+                <p>No sales data found.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="progress-row">
+
+    <div class="progress-card">
+        <div class="card-header">
+            <h3>Order Status</h3>
+        </div>
+
+        <div class="card-body">
+            <div class="progress-item">
+                <div class="progress-info">
+                    <span>Pending Orders</span>
+                    <span>{{ pending_orders }}</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width:40%"></div>
+                </div>
+            </div>
+
+            <div class="progress-item">
+                <div class="progress-info">
+                    <span>Delivered Orders</span>
+                    <span>{{ delivered_orders }}</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width:80%"></div>
+                </div>
+            </div>
+
+            <div class="progress-item">
+                <div class="progress-info">
+                    <span>Cancelled Orders</span>
+                    <span>{{ cancelled_orders }}</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width:20%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="progress-card">
+        <div class="card-header">
+            <h3>Store Activity</h3>
+        </div>
+
+        <div class="card-body">
+            <div class="progress-item">
+                <div class="progress-info">
+                    <span>Cart Items</span>
+                    <span>{{ cart_count }}</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width:60%"></div>
+                </div>
+            </div>
+
+            <div class="progress-item">
+                <div class="progress-info">
+                    <span>Wishlist Items</span>
+                    <span>{{ wishlist_count }}</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width:70%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const chartLabels = {{ chart_labels|safe }};
+const chartSales = {{ chart_sales|safe }};
+
+new Chart(document.getElementById("revenueChart"), {
+    type: "line",
+    data: {
+        labels: chartLabels,
+        datasets: [{
+            label: "Revenue",
+            data: chartSales,
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+new Chart(document.getElementById("salesChart"), {
+    type: "doughnut",
+    data: {
+        labels: ["Pending", "Delivered", "Cancelled"],
+        datasets: [{
+            data: [
+                {{ pending_orders }},
+                {{ delivered_orders }},
+                {{ cancelled_orders }}
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: "70%",
+        plugins: {
+            legend: {
+                position: "bottom"
+            }
+        }
+    }
+});
+</script>
+
+{% endblock admin_main %}

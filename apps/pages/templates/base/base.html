@@ -1,0 +1,606 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    
+    <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+    />
+    
+    <title>
+        {% block title %}
+        Rajanigandha Jewellers
+        {% endblock %}
+    </title>
+    
+    {% block extra_meta %}{% endblock extra_meta%}
+
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="{% static 'images/logo/logo.png' %}">
+    <link rel="shortcut icon" href="{% static 'images/logo/logo.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/logo/logo.png' %}">
+
+    <!-- OPEN GRAPH -->
+    <meta property="og:type" content="website">
+
+    <meta property="og:title"
+        content="Rajanigandha Jewellers">
+
+    <meta property="og:description"
+        content="Luxury jewellery collection with elegance, trust, and premium craftsmanship.">
+
+    <meta property="og:image"
+        content="{% static 'images/logo/logo.png' %}">
+
+    <meta property="og:image:width"
+        content="1200">
+
+    <meta property="og:image:height"
+        content="630">
+
+    <meta property="og:url"
+        content="{{ request.build_absolute_uri }}">
+
+    <meta property="og:site_name"
+        content="Rajanigandha Jewellers">
+
+    <!-- TWITTER CARD -->
+    <meta name="twitter:card"
+        content="summary_large_image">
+
+    <meta name="twitter:title"
+        content="Rajanigandha Jewellers">
+
+    <meta name="twitter:description"
+        content="Luxury jewellery collection with elegance and premium craftsmanship.">
+
+    <meta name="twitter:image"
+      content="{% static 'images/logo/logo.png' %}">
+
+
+    <!-- GOOGLE FONTS -->
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- FONT AWESOME -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    >
+
+    <!-- MAIN CSS -->
+    <link
+        rel="stylesheet"
+        href="{% static 'css/frontend.css' %}"
+    >
+
+    {% block page_css %}
+    {% endblock %}
+
+</head>
+
+<body>
+
+    <!-- COMPONENTS -->
+    {% include "components/topbar.html" %}
+    {% include "components/logo.html" %}
+    {% include "components/navbar.html" %}
+    {% include "components/mobile_sidebar.html" %}
+
+    <!-- CONTENT -->
+    {% block content %}
+    {% endblock %}
+
+    <!-- FOOTER -->
+    {% include "components/footer.html" %}
+
+    <!-- BACK TO TOP -->
+    <button class="back-top" id="backTop">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- PAGE JS -->
+    {% block extra_js %}
+    {% endblock extra_js %}
+
+    <!-- MAIN CART JS -->
+    <script src="{% static 'js/cart.js' %}?v=2"></script>
+
+    <!-- MAIN SCRIPT -->
+    <script>
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+        const overlay =
+            document.getElementById(
+                "overlay"
+            );
+
+        const accountModal =
+            document.getElementById(
+                "accountModal"
+            );
+
+        /* =========================
+           SEARCH
+        ========================= */
+
+        const searchToggle =
+            document.getElementById(
+                "searchToggle"
+            );
+
+        const searchPanel =
+            document.getElementById(
+                "searchPanel"
+            );
+
+        if (
+            searchToggle &&
+            searchPanel
+        ) {
+
+            searchToggle.addEventListener(
+                "click",
+                function (e) {
+
+                    e.stopPropagation();
+
+                    searchPanel.classList.toggle(
+                        "active"
+                    );
+
+                    const icon =
+                        searchToggle.querySelector("i");
+
+                    if (
+                        searchPanel.classList.contains(
+                            "active"
+                        )
+                    ) {
+
+                        icon.classList.remove(
+                            "fa-magnifying-glass"
+                        );
+
+                        icon.classList.add(
+                            "fa-xmark"
+                        );
+
+                    }
+                    else {
+
+                        icon.classList.remove(
+                            "fa-xmark"
+                        );
+
+                        icon.classList.add(
+                            "fa-magnifying-glass"
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+        /* =========================
+           MOBILE SIDEBAR
+        ========================= */
+
+        const menuOpen =
+            document.getElementById(
+                "menuOpen"
+            );
+
+        const menuClose =
+            document.getElementById(
+                "menuClose"
+            );
+
+        const mobileSidebar =
+            document.getElementById(
+                "mobileSidebar"
+            );
+
+        if (
+            menuOpen &&
+            menuClose &&
+            mobileSidebar &&
+            overlay
+        ) {
+
+            menuOpen.addEventListener(
+                "click",
+                function (e) {
+
+                    e.stopPropagation();
+
+                    mobileSidebar.classList.add(
+                        "active"
+                    );
+
+                    overlay.classList.add(
+                        "active"
+                    );
+
+                }
+            );
+
+            menuClose.addEventListener(
+                "click",
+                function () {
+
+                    mobileSidebar.classList.remove(
+                        "active"
+                    );
+
+                    overlay.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+        }
+
+        /* =========================
+           CART SIDEBAR
+        ========================= */
+
+        const cartToggle =
+            document.getElementById(
+                "cartToggle"
+            );
+
+        const cartPanel =
+            document.getElementById(
+                "cartPanel"
+            );
+
+        const cartClose =
+            document.querySelector(
+                "#cartPanel .close-btn"
+            );
+
+        if (
+            cartToggle &&
+            cartPanel &&
+            cartClose &&
+            overlay
+        ) {
+
+            cartToggle.addEventListener(
+                "click",
+                function (e) {
+
+                    e.stopPropagation();
+
+                    cartPanel.classList.add(
+                        "active"
+                    );
+
+                    overlay.classList.add(
+                        "active"
+                    );
+
+                }
+            );
+
+            cartClose.addEventListener(
+                "click",
+                function () {
+
+                    cartPanel.classList.remove(
+                        "active"
+                    );
+
+                    overlay.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+        }
+
+        /* =========================
+           WISHLIST SIDEBAR
+        ========================= */
+
+        const wishlistToggle =
+            document.getElementById(
+                "wishlistToggle"
+            );
+
+        const wishlistPanel =
+            document.getElementById(
+                "wishlistPanel"
+            );
+
+        const wishlistClose =
+            document.querySelector(
+                "#wishlistPanel .close-btn"
+            );
+
+        if (
+            wishlistToggle &&
+            wishlistPanel &&
+            wishlistClose &&
+            overlay
+        ) {
+
+            wishlistToggle.addEventListener(
+                "click",
+                function (e) {
+
+                    e.stopPropagation();
+
+                    wishlistPanel.classList.add(
+                        "active"
+                    );
+
+                    overlay.classList.add(
+                        "active"
+                    );
+
+                }
+            );
+
+            wishlistClose.addEventListener(
+                "click",
+                function () {
+
+                    wishlistPanel.classList.remove(
+                        "active"
+                    );
+
+                    overlay.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+        }
+
+        /* =========================
+           CHECKOUT MODAL
+        ========================= */
+
+        const checkoutBtn =
+            document.getElementById(
+                "checkoutBtn"
+            );
+
+        const checkoutModal =
+            document.getElementById(
+                "checkoutModal"
+            );
+
+        const checkoutClose =
+            document.querySelector(
+                "#checkoutModal .close-btn"
+            );
+
+        const placeOrder =
+            document.getElementById(
+                "placeOrder"
+            );
+
+        if (
+            checkoutBtn &&
+            checkoutModal
+        ) {
+
+            checkoutBtn.addEventListener(
+                "click",
+                function (e) {
+
+                    e.stopPropagation();
+
+                    checkoutModal.classList.add(
+                        "active"
+                    );
+
+                    if (cartPanel) {
+                        cartPanel.classList.remove(
+                            "active"
+                        );
+                    }
+
+                    if (overlay) {
+                        overlay.classList.remove(
+                            "active"
+                        );
+                    }
+
+                }
+            );
+
+        }
+
+        if (
+            checkoutClose &&
+            checkoutModal
+        ) {
+
+            checkoutClose.addEventListener(
+                "click",
+                function () {
+
+                    checkoutModal.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+        }
+
+        if (
+            placeOrder &&
+            checkoutModal
+        ) {
+
+            placeOrder.addEventListener(
+                "click",
+                function () {
+
+                    alert(
+                        "Order placed successfully!"
+                    );
+
+                    checkoutModal.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+        }
+
+        /* =========================
+           OVERLAY CLOSE
+        ========================= */
+
+        if (overlay) {
+
+            overlay.addEventListener(
+                "click",
+                function () {
+
+                    overlay.classList.remove(
+                        "active"
+                    );
+
+                    if (mobileSidebar) {
+                        mobileSidebar.classList.remove(
+                            "active"
+                        );
+                    }
+
+                    if (cartPanel) {
+                        cartPanel.classList.remove(
+                            "active"
+                        );
+                    }
+
+                    if (wishlistPanel) {
+                        wishlistPanel.classList.remove(
+                            "active"
+                        );
+                    }
+
+                    if (accountModal) {
+                        accountModal.classList.remove(
+                            "active"
+                        );
+                    }
+
+                }
+            );
+
+        }
+
+        /* =========================
+           OUTSIDE CLICK SEARCH
+        ========================= */
+
+        document.addEventListener(
+            "click",
+            function (e) {
+
+                if (
+                    searchPanel &&
+                    searchToggle &&
+                    !searchPanel.contains(e.target) &&
+                    !searchToggle.contains(e.target)
+                ) {
+
+                    searchPanel.classList.remove(
+                        "active"
+                    );
+
+                    const icon =
+                        searchToggle.querySelector("i");
+
+                    if (icon) {
+
+                        icon.classList.remove(
+                            "fa-xmark"
+                        );
+
+                        icon.classList.add(
+                            "fa-magnifying-glass"
+                        );
+
+                    }
+
+                }
+
+            }
+        );
+
+    });
+
+    </script>
+
+    <!-- MOBILE DROPDOWN -->
+    <script>
+
+    document.querySelectorAll(
+        ".mobile-dropdown-btn"
+    ).forEach(btn => {
+
+        btn.addEventListener(
+            "click",
+            () => {
+
+                btn.parentElement.classList.toggle(
+                    "active"
+                );
+
+            }
+        );
+
+    });
+
+    document.querySelectorAll(
+        ".mobile-submenu-btn"
+    ).forEach(btn => {
+
+        btn.addEventListener(
+            "click",
+            () => {
+
+                btn.parentElement.classList.toggle(
+                    "active"
+                );
+
+            }
+        );
+
+    });
+
+    </script>
+
+</body>
+</html>

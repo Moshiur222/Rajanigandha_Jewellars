@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="{% static 'images/logo/logo.png' %}">
+    <link rel="shortcut icon" href="{% static 'images/logo/logo.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/logo/logo.png' %}">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{% static 'admin/assets/css/all.min.css' %}">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/css/components.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/css/responsive.css' %}">
+    {% block admin_css %}{% endblock admin_css %}
+</head>
+<body>
+    <div class="main-wrapper">
+        <!-- Sidebar -->
+        {% include "admin/components/sidebar.html" %}
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            {% include "admin/components/header.html" %}
+
+            <!-- Page Content -->
+            <main class="page-content">
+                <!-- Page Title -->
+                <div class="page-title">
+                    <h1>Dashboard</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item active">Dashboard</li>
+                        </ol>
+                    </nav>
+                </div>
+
+                {% block admin_main %}
+                {% endblock admin_main %}
+            </main>
+
+            {% include "admin/components/footer.html" %}
+        </div>
+    </div>
+
+    <!-- Custom JS -->
+    {% block admin_js %}{% endblock admin_js %}
+    <script src="{% static 'admin/js/main.js' %}"></script>
+    <script src="{% static 'admin/js/charts.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+ <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <span class="brand-text">Admin</span>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <ul class="menu-list">
+
+                    <li class="menu-item active">
+                        <a href="{% url 'dashboard:home' %}" class="menu-link">
+                            <i class="fas fa-th-large"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="{% url 'dashboard:menue' %}" class="menu-link">
+                            <i class="fas fa-bars"></i>
+                            <span>Menue</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="{% url 'dashboard:category' %}" class="menu-link">
+                            <i class="fas fa-layer-group"></i>
+                            <span>Category</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="{% url 'dashboard:sub_category' %}" class="menu-link">
+                            <i class="fas fa-list"></i>
+                            <span>Sub Category</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="{% url 'dashboard:products' %}" class="menu-link">
+                            <i class="fas fa-gem"></i>
+                            <span>Products</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="{% url 'dashboard:orders' %}" class="menu-link">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span>Orders</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="{% url 'dashboard:customers' %}" class="menu-link">
+                            <i class="fas fa-users"></i>
+                            <span>Customers</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="{% url 'dashboard:offers' %}" class="menu-link">
+                            <i class="fas fa-tags"></i>
+                            <span>Offers</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="{% url 'dashboard:stores' %}" class="menu-link">
+                            <i class="fas fa-store"></i>
+                            <span>Stores</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
+        </aside>

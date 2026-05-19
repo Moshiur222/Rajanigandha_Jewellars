@@ -1,0 +1,338 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="cart_border">
+<section class="section">
+
+{% if wishlist_items %}
+
+<div class="wishlist-toolbar">
+    <p class="wishlist-count">
+        <span id="wishlistItemCount">{{ wishlist_items|length }}</span>
+        items in your wishlist
+    </p>
+
+    <button
+        class="clear-cart-btn"
+        id="clearWishlistBtn"
+        data-url="{% url 'pages:clear_wishlist' %}"
+        type="button"
+    >
+        <i class="fas fa-trash-alt"></i>
+        Clear Wishlist
+    </button>
+</div>
+
+<div class="product-grid" id="wishlistGrid">
+
+{% for item in wishlist_items %}
+
+<div class="product-card" data-product-id="{{ item.product.id }}">
+
+    <div class="product-image">
+        {% if item.product.image %}
+            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+        {% else %}
+            <img src="{% static 'images/no-image.png' %}" alt="No Image">
+        {% endif %}
+
+        <button
+            class="wish-btn active remove-wishlist-btn"
+            data-url="{% url 'pages:remove_from_wishlist' item.product.id %}"
+            type="button"
+        >
+            <i class="fa-solid fa-heart"></i>
+        </button>
+    </div>
+
+    <div class="product-info">
+
+        <span class="product-meta">
+            {% if item.product.menue %}
+                {{ item.product.menue.get_name_display }}
+            {% endif %}
+
+            {% if item.product.category %}
+                / {{ item.product.category.get_name_display }}
+            {% endif %}
+
+            {% if item.product.subcategory %}
+                / {{ item.product.subcategory.name }}
+            {% endif %}
+        </span>
+
+        <h3>{{ item.product.name }}</h3>
+
+        {% if item.product.weight %}
+        <span class="weight-text">
+            {{ item.product.weight }} Gram
+        </span>
+        {% endif %}
+
+        <div class="price-row">
+            {% if item.product.regular_price > item.product.final_price %}
+                <span class="old-price">
+                    ৳{{ item.product.regular_price|floatformat:2 }}
+                </span>
+            {% endif %}
+
+            <span class="new-price">
+                ৳{{ item.product.final_price|floatformat:2 }}
+            </span>
+        </div>
+
+        <div class="product-actions">
+            <button
+                class="gold-btn wishlist-add-cart-btn"
+                data-url="{% url 'pages:add_to_cart' item.product.id %}"
+                type="button"
+            >
+                <i class="fas fa-shopping-cart"></i>
+                Add to Cart
+            </button>
+
+            <button
+                class="outline-btn remove-wishlist-btn"
+                data-url="{% url 'pages:remove_from_wishlist' item.product.id %}"
+                type="button"
+            >
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty-wishlist">
+    <div class="empty-wishlist-icon">
+        <i class="fa-regular fa-heart"></i>
+    </div>
+
+    <h2>Your Wishlist is Empty</h2>
+    <p>Save your favorite jewellery pieces and find them here anytime.</p>
+
+    <a href="{% url 'pages:home' %}" class="gold-btn">
+        <i class="fas fa-shopping-bag"></i>
+        Explore Collections
+    </a>
+</div>
+
+{% endif %}
+
+</section>
+</div>
+{% endblock content %}
+
+{% block page_css %}
+<style>
+.wishlist-toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px 0;
+    margin-bottom:30px;
+    border-bottom:2px solid var(--border);
+    flex-wrap:wrap;
+    gap:16px;
+}
+
+.wishlist-count{
+    font-size:16px;
+    color:var(--text);
+    margin:0;
+    font-weight:500;
+}
+
+.wishlist-count span{
+    color:var(--gold);
+    font-weight:700;
+}
+
+.product-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+    gap:25px;
+}
+
+.product-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    position:relative;
+    transition:.3s ease;
+}
+
+.product-card:hover{
+    transform:translateY(-6px);
+    border-color:var(--gold);
+}
+
+.product-image{
+    height:260px;
+    overflow:hidden;
+    background:#f6f1e9;
+    position:relative;
+}
+
+.product-image img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.wish-btn{
+    position:absolute;
+    top:14px;
+    right:14px;
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    background:#fff;
+    border:none;
+    color:var(--muted);
+    z-index:2;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+}
+
+.wish-btn.active{
+    background:#dc3545;
+    color:#fff;
+}
+
+.product-info{
+    padding:20px;
+}
+
+.product-meta{
+    color:var(--gold);
+    font-size:12px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+
+.weight-text{
+    display:block;
+    color:var(--muted);
+    margin-top:4px;
+    font-size:13px;
+}
+
+.product-info h3{
+    font-size:17px;
+    font-weight:600;
+    color:var(--text);
+    margin:8px 0;
+    line-height:1.4;
+}
+
+.price-row{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    flex-wrap:wrap;
+    margin:12px 0 16px;
+}
+
+.old-price{
+    color:var(--muted);
+    text-decoration:line-through;
+    font-size:13px;
+}
+
+.new-price{
+    color:var(--gold);
+    font-weight:800;
+    font-size:18px;
+}
+
+.product-actions{
+    display:grid;
+    grid-template-columns:1fr 48px;
+    gap:10px;
+    margin-top:16px;
+}
+
+.product-actions .gold-btn{
+    font-size:13px;
+    padding:12px 16px;
+    white-space:nowrap;
+}
+
+.outline-btn{
+    padding:0;
+    width:48px;
+    height:48px;
+    border-radius:12px;
+    border:1px solid var(--border);
+    color:var(--muted);
+    background:transparent;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+}
+
+.outline-btn:hover{
+    border-color:#dc3545;
+    color:#dc3545;
+    background:rgba(220,53,69,.05);
+}
+
+.empty-wishlist{
+    text-align:center;
+    padding:80px 20px;
+}
+
+.empty-wishlist-icon{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    background:rgba(197,155,67,.1);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto 30px;
+}
+
+.empty-wishlist-icon i{
+    font-size:48px;
+    color:var(--gold);
+}
+
+.product-card.removing{
+    animation:fadeOut .3s ease forwards;
+}
+
+@keyframes fadeOut{
+    to{
+        opacity:0;
+        transform:scale(.9);
+    }
+}
+
+@media(max-width:768px){
+    .wishlist-toolbar{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .product-grid{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+{% endblock page_css %}
