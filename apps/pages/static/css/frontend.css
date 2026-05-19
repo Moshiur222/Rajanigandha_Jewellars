@@ -894,7 +894,7 @@ body.dark .navbar{
   height:20%;
   object-fit:contain;
   transition:.35s ease;
-  padding-left: 27px;
+  padding-left: 95px;
 }
 
 .brand-logo-img:hover{
@@ -960,7 +960,7 @@ body.dark .navbar{
     font-weight:700;
     letter-spacing:6px;
     text-transform:capitalize;
-    color:#111;
+    color:#aa1212;
     line-height:1;
 }
 
@@ -972,11 +972,11 @@ body.dark .navbar{
     margin-top:10px;
 
     font-family:'Cinzel', serif;
-    font-size:16px;
+    font-size:18px;
     font-weight:600;
     letter-spacing:10px;
     text-transform:capitalize;
-    color:#c59b43;
+    color:#000;
 }
 
 .brand-text span::before,
