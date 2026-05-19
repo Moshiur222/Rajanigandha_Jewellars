@@ -3,7 +3,8 @@
    It keeps the same luxury product-listing design without JavaScript. */
 
 .shop-section {
-  background: var(--bg);
+  background: #c59b4314;
+  padding: 24px;
 }
 
 .shop-layout {
@@ -89,6 +90,8 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 25px;
+  margin: 25px;
+  padding-bottom: 25px;
 }
 
 .products-empty {
