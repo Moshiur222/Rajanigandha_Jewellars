@@ -52,8 +52,7 @@
     gap: 18px;
     margin-bottom: 28px;
     padding: 18px 20px;
-    background: rgba(197,155,67,0.08);
-    border: 1px solid rgba(197,155,67,0.18);
+    border: 1px solid;
     border-radius: 18px;
 }
 
@@ -112,7 +111,7 @@
     text-align: center;
     padding: 80px 20px;
     border-radius: 24px;
-    background: rgba(197,155,67,0.08);
+    background: rgba(0, 0, 0, 0.08);
     border: 1px dashed rgba(197,155,67,0.35);
 }
 
@@ -186,7 +185,7 @@ document.addEventListener("DOMContentLoaded", function () {
             {% elif subcategory %}
                 {{ subcategory.get_name_display }}
             {% else %}
-                all Jewellery
+                All Jewellery
             {% endif %}
         </h2>
         <p>Explore our premium jewellery collection with smart filters.</p>

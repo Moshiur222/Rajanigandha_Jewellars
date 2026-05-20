@@ -1,6 +1,7 @@
 
 {% extends 'base/base.html' %}
 {% load static %}
+{% load custom_filters %}
 {% block content %}
 
 <div class="cart_border">
@@ -91,7 +92,7 @@
 
                             {% if item.old_price %}
                             <span class="item-original-price">
-                                ৳{{ item.old_price }}
+                                ৳{{ item.old_price|bd_currency }}
                             </span>
                             {% endif %}
                         </div>
@@ -138,24 +139,24 @@
 
                 <div class="summary-row">
                     <span>Subtotal ({{ cart_count }} items)</span>
-                    <span>৳{{ subtotal }}</span>
+                    <span>৳{{ subtotal|bd_currency }}</span>
                 </div>
 
                 <div class="summary-row">
                     <span>Delivery Charge</span>
-                    <span>৳{{ delivery_charge }}</span>
+                    <span>৳{{ delivery_charge|bd_currency }}</span>
                 </div>
 
                 {% if discount_total > 0 %}
                 <div class="summary-row discount">
                     <span>Discount</span>
-                    <span class="discount-amount">−৳{{ discount_total }}</span>
+                    <span class="discount-amount">−৳{{ discount_total|bd_currency }}</span>
                 </div>
                 {% endif %}
 
                 <div class="summary-row total">
                     <span>Total</span>
-                    <span>৳{{ total }}</span>
+                    <span>৳{{ total|bd_currency }}</span>
                 </div>
 
             </div>
@@ -473,7 +474,6 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        color: var(--gold);
         font-weight: 500;
         text-decoration: none;
         padding: 12px 0;

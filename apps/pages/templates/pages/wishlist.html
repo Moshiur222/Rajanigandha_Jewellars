@@ -1,6 +1,6 @@
 {% extends 'base/base.html' %}
 {% load static %}
-
+{% load custom_filters %}
 {% block content %}
 <div class="cart_border">
 <section class="section">
@@ -73,12 +73,12 @@
         <div class="price-row">
             {% if item.product.regular_price > item.product.final_price %}
                 <span class="old-price">
-                    ৳{{ item.product.regular_price|floatformat:2 }}
+                    ৳{{ item.product.regular_price|bd_currency }}
                 </span>
             {% endif %}
 
             <span class="new-price">
-                ৳{{ item.product.final_price|floatformat:2 }}
+                ৳{{ item.product.final_price|bd_currency }}
             </span>
         </div>
 

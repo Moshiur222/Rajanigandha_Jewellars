@@ -48,7 +48,7 @@
 .category-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  gap: 20px;
+  gap: 5px;
   margin: 25px;
   padding-bottom: 25px;
 }
@@ -112,10 +112,6 @@
   min-width: 260px;
 }
 
-/* Sale section */
-.sale-bg {
-  background: linear-gradient(135deg, rgba(197, 155, 67, 0.1), rgba(197, 155, 67, 0.03));
-}
 
 /* Track order */
 .track-section {
@@ -211,7 +207,7 @@
 .newsletter {
   padding: 80px 6%;
   text-align: center;
-  background: rgba(197, 155, 67, 0.08);
+  color: #fff;
 }
 
 .newsletter h2 {
