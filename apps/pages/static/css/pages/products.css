@@ -10,7 +10,7 @@
 .shop-layout {
   display: grid;
   grid-template-columns: 280px 1fr;
-  gap: 30px;
+  gap: 5px;
 }
 
 .filters {
@@ -89,8 +89,8 @@
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 0.5fr));
-  gap: 25px;
-  margin: 25px;
+  gap: 10px;
+  margin: 5px;
   padding-bottom: 25px;
 }
 

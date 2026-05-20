@@ -1,18 +1,21 @@
 from decimal import Decimal
+import random
 
 from django.contrib import messages
-from django.contrib.auth import authenticate, get_user_model, login
-from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth import authenticate, get_user_model, login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
 from django.contrib.auth.hashers import make_password
 from django.core.cache import cache
-from django.core.mail import send_mail
-from django.conf import settings
-import random
+from django.db.models import Q
+from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404, redirect
+from django.templatetags.static import static
 
 from apps.pages.models import *
 from apps.dashboard.models import *
+
+
+User = get_user_model()
 
 
 def login_view(request):
@@ -35,12 +38,8 @@ def login_view(request):
     return render(request, "pages/login.html")
 
 
-User = get_user_model()
-
-
 def generate_otp():
     return str(random.randint(100000, 999999))
-
 
 
 def signup_view(request):
@@ -178,85 +177,35 @@ def change_email_view(request):
 
     return render(request, "pages/change_email.html", {"email": old_email})
 
+
 @login_required
 def profile_view(request):
-
     if request.user.user_type != 2:
         return redirect("dashboard:home")
 
-    profile, created = Profile.objects.get_or_create(
-        user=request.user
-    )
+    profile, created = Profile.objects.get_or_create(user=request.user)
 
     if request.method == "POST":
-
-        request.user.first_name = request.POST.get(
-            "first_name",
-            ""
-        )
-
-        request.user.last_name = request.POST.get(
-            "last_name",
-            ""
-        )
-
+        request.user.first_name = request.POST.get("first_name", "")
+        request.user.last_name = request.POST.get("last_name", "")
         request.user.save()
 
-        profile.phone = request.POST.get(
-            "phone",
-            ""
-        )
-
-        profile.alternate_phone = request.POST.get(
-            "alternate_phone",
-            ""
-        )
-
-        profile.gender = request.POST.get(
-            "gender"
-        ) or None
-
-        profile.date_of_birth = request.POST.get(
-            "date_of_birth"
-        ) or None
-
-        profile.address = request.POST.get(
-            "address",
-            ""
-        )
-
-        profile.city = request.POST.get(
-            "city",
-            ""
-        )
-
-        profile.area = request.POST.get(
-            "area",
-            ""
-        )
-
-        profile.zip_code = request.POST.get(
-            "zip_code",
-            ""
-        )
-
-        profile.bio = request.POST.get(
-            "bio",
-            ""
-        )
+        profile.phone = request.POST.get("phone", "")
+        profile.alternate_phone = request.POST.get("alternate_phone", "")
+        profile.gender = request.POST.get("gender") or None
+        profile.date_of_birth = request.POST.get("date_of_birth") or None
+        profile.address = request.POST.get("address", "")
+        profile.city = request.POST.get("city", "")
+        profile.area = request.POST.get("area", "")
+        profile.zip_code = request.POST.get("zip_code", "")
+        profile.bio = request.POST.get("bio", "")
 
         if request.FILES.get("profile_image"):
-            profile.profile_image = request.FILES.get(
-                "profile_image"
-            )
+            profile.profile_image = request.FILES.get("profile_image")
 
         profile.save()
 
-        messages.success(
-            request,
-            "Profile updated successfully."
-        )
-
+        messages.success(request, "Profile updated successfully.")
         return redirect("pages:profile")
 
     return render(request, "pages/profile.html", {
@@ -266,13 +215,10 @@ def profile_view(request):
 
 @login_required
 def order_view(request):
-
     if request.user.user_type != 2:
         return redirect("dashboard:home")
 
-    orders = Order.objects.prefetch_related(
-        "items"
-    ).filter(
+    orders = Order.objects.prefetch_related("items").filter(
         user=request.user
     ).order_by("-id")
 
@@ -281,22 +227,12 @@ def order_view(request):
     })
 
 
-from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from .models import Profile
-
-
 @login_required
 def settings_view(request):
-
     if request.user.user_type != 2:
         return redirect("dashboard:home")
 
-    profile, created = Profile.objects.get_or_create(
-        user=request.user
-    )
+    profile, created = Profile.objects.get_or_create(user=request.user)
 
     if request.method == "POST":
         current_password = request.POST.get("current_password")
@@ -317,7 +253,6 @@ def settings_view(request):
 
         request.user.set_password(new_password)
         request.user.save()
-
         update_session_auth_hash(request, request.user)
 
         messages.success(request, "Password updated successfully.")
@@ -356,28 +291,157 @@ def home(request):
     })
 
 
+# =========================
+# PRODUCT FILTER HELPER
+# =========================
+
+def get_filter_base_context():
+    max_product_price = Decimal("0")
+
+    for product in Product.objects.all():
+        if product.final_price and product.final_price > max_product_price:
+            max_product_price = product.final_price
+
+    max_product_price += Decimal("10000")
+    
+    if max_product_price <= 0:
+        max_product_price = Decimal("200000")
+
+    return {
+        "menues": Menue.objects.all().order_by("order"),
+        "categories": Category.objects.select_related("menue").all().order_by("order"),
+        "sub_categories": SubCategory.objects.all().order_by("order"),
+        "max_product_price": int(max_product_price),
+    }
+
+
+def apply_product_filter(request, products):
+    selected_sort = request.GET.get("sort", "latest")
+    selected_menue = request.GET.get("menue", "")
+    selected_category = request.GET.get("category", "")
+    selected_subcategory = request.GET.get("subcategory", "")
+    selected_availability = request.GET.get("availability", "")
+    max_price = request.GET.get("max_price", "")
+    search = request.GET.get("search", "")
+
+    base_context = get_filter_base_context()
+
+    if not max_price:
+        max_price = base_context["max_product_price"]
+
+    if selected_menue:
+        products = products.filter(menue_id=selected_menue)
+
+    if selected_category:
+        products = products.filter(category_id=selected_category)
+
+    if selected_subcategory:
+        products = products.filter(subcategory_id=selected_subcategory)
+
+    if selected_availability == "in_stock":
+        products = products.filter(
+            is_available=True,
+            stock__gt=0
+        )
+
+    elif selected_availability == "out_stock":
+        products = products.filter(
+            Q(is_available=False) | Q(stock__lte=0)
+        )
+
+    if search:
+        products = products.filter(
+            Q(name__icontains=search) |
+            Q(sku__icontains=search)
+        )
+
+    products = list(products)
+
+    if max_price:
+        try:
+            max_price_decimal = Decimal(str(max_price))
+
+            products = [
+                product for product in products
+                if product.final_price <= max_price_decimal
+            ]
+
+        except:
+            pass
+
+    if selected_sort == "price_low":
+        products = sorted(
+            products,
+            key=lambda product: product.final_price or 0
+        )
+
+    elif selected_sort == "price_high":
+        products = sorted(
+            products,
+            key=lambda product: product.final_price or 0,
+            reverse=True
+        )
+
+    elif selected_sort == "popular":
+        products = sorted(
+            products,
+            key=lambda product: product.id,
+            reverse=True
+        )
+
+    else:
+        products = sorted(
+            products,
+            key=lambda product: product.id,
+            reverse=True
+        )
+
+    return products, {
+        **base_context,
+        "selected_sort": selected_sort,
+        "selected_menue": selected_menue,
+        "selected_category": selected_category,
+        "selected_subcategory": selected_subcategory,
+        "selected_availability": selected_availability,
+        "max_price": int(max_price),
+        "search": search,
+        "product_count": len(products),
+    }
+
+
 def menue_products(request, slug):
     menue = get_object_or_404(Menue, slug=slug)
 
-    categories = Category.objects.filter(menue=menue).order_by("order")
-    sub_categories = SubCategory.objects.all().order_by("order")
-
     products = Product.objects.select_related(
-        "menue", "category", "subcategory"
-    ).filter(menue=menue).order_by("order")
+        "menue",
+        "category",
+        "subcategory"
+    ).filter(
+        menue=menue
+    )
+
+    products, filter_context = apply_product_filter(
+        request,
+        products
+    )
 
     return render(request, "pages/menue_products.html", {
         "menue": menue,
-        "categories": categories,
-        "sub_categories": sub_categories,
         "products": products,
-        "featured_products": products.filter(is_featured=True)[:20],
+        "featured_products": [
+            product for product in products
+            if product.is_featured
+        ][:20],
         "sale_products": products[:24],
+        **filter_context,
     })
 
 
 def category_products(request, menue_slug, category_slug):
-    menue = get_object_or_404(Menue, slug=menue_slug)
+    menue = get_object_or_404(
+        Menue,
+        slug=menue_slug
+    )
 
     category = get_object_or_404(
         Category,
@@ -385,33 +449,51 @@ def category_products(request, menue_slug, category_slug):
         slug=category_slug
     )
 
-    categories = Category.objects.filter(menue=menue).order_by("order")
-    sub_categories = SubCategory.objects.all().order_by("order")
-
     products = Product.objects.select_related(
-        "menue", "category", "subcategory"
-    ).filter(menue=menue, category=category).order_by("order")
+        "menue",
+        "category",
+        "subcategory"
+    ).filter(
+        menue=menue,
+        category=category
+    )
+
+    products, filter_context = apply_product_filter(
+        request,
+        products
+    )
 
     return render(request, "pages/category_products.html", {
         "menue": menue,
         "category": category,
-        "categories": categories,
-        "sub_categories": sub_categories,
         "products": products,
+        **filter_context,
     })
 
 
 def subcategory_products(request, subcategory_slug):
-    subcategory = get_object_or_404(SubCategory, slug=subcategory_slug)
+    subcategory = get_object_or_404(
+        SubCategory,
+        slug=subcategory_slug
+    )
 
     products = Product.objects.select_related(
-        "menue", "category", "subcategory"
-    ).filter(subcategory=subcategory).order_by("order")
+        "menue",
+        "category",
+        "subcategory"
+    ).filter(
+        subcategory=subcategory
+    )
+
+    products, filter_context = apply_product_filter(
+        request,
+        products
+    )
 
     return render(request, "pages/products.html", {
         "subcategory": subcategory,
-        "sub_categories": SubCategory.objects.all().order_by("order"),
         "products": products,
+        **filter_context,
     })
 
 
@@ -446,7 +528,6 @@ def cart_page(request):
 
 
 def add_to_cart(request, product_id):
-
     if not request.user.is_authenticated:
         return JsonResponse({
             "status": "login_required",
@@ -533,8 +614,8 @@ def wishlist_page(request):
         "wishlist_items": wishlist_items
     })
 
-def add_to_wishlist(request, product_id):
 
+def add_to_wishlist(request, product_id):
     if not request.user.is_authenticated:
         return JsonResponse({
             "status": "login_required",
@@ -590,15 +671,15 @@ def clear_wishlist(request):
     })
 
 
-from django.templatetags.static import static
-
 def quick_view_product(request, slug):
     product = get_object_or_404(Product, slug=slug)
 
     if product.image:
         meta_image = request.build_absolute_uri(product.image.url)
     else:
-        meta_image = request.build_absolute_uri(static("images/logo/logo.png"))
+        meta_image = request.build_absolute_uri(
+            static("images/logo/logo.png")
+        )
 
     seo = {
         "meta_title": f"{product.name} | Rajanigandha Jewellers",
@@ -643,7 +724,6 @@ def quick_view_product(request, slug):
 
 @login_required
 def checkout_view(request):
-
     cart_items = Cart.objects.select_related(
         "product",
         "product__category",
@@ -671,7 +751,6 @@ def checkout_view(request):
     total = subtotal + delivery_charge - discount
 
     if request.method == "POST":
-
         payment_method = request.POST.get("payment_method")
 
         payment_method_map = {
@@ -681,7 +760,6 @@ def checkout_view(request):
             "card": 4,
         }
 
-        # save latest address into profile
         profile.phone = request.POST.get("phone", "")
         profile.city = request.POST.get("city", "")
         profile.area = request.POST.get("area", "")

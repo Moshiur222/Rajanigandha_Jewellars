@@ -1,6 +1,7 @@
 {% load static %}
-{% block page_css %}
 {% load custom_filters %}
+
+{% block page_css %}
 <style>
 
 .filter-head {
@@ -135,31 +136,54 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const maxPriceRange = document.getElementById("maxPriceRange");
-    const maxPriceValue = document.getElementById("maxPriceValue");
+
+    const maxPriceRange =
+        document.getElementById("maxPriceRange");
+
+    const maxPriceValue =
+        document.getElementById("maxPriceValue");
 
     if (maxPriceRange && maxPriceValue) {
-        maxPriceRange.addEventListener("input", function () {
-            maxPriceValue.innerText = maxPriceRange.value;
-        });
+
+        maxPriceRange.addEventListener(
+            "input",
+            function () {
+                maxPriceValue.innerText =
+                    maxPriceRange.value;
+            }
+        );
     }
 
-    const menueFilter = document.getElementById("menueFilter");
-    const categoryFilter = document.getElementById("categoryFilter");
+    const menueFilter =
+        document.getElementById("menueFilter");
+
+    const categoryFilter =
+        document.getElementById("categoryFilter");
 
     function filterCategoryOptions() {
-        const selectedMenue = menueFilter.value;
 
-        Array.from(categoryFilter.options).forEach(function (option) {
+        if (!menueFilter || !categoryFilter) return;
+
+        const selectedMenue =
+            menueFilter.value;
+
+        Array.from(categoryFilter.options)
+        .forEach(function (option) {
+
             if (!option.dataset.menue) {
                 option.hidden = false;
                 return;
             }
 
-            option.hidden = selectedMenue && option.dataset.menue !== selectedMenue;
+            option.hidden =
+                selectedMenue &&
+                option.dataset.menue !== selectedMenue;
         });
 
-        const selectedOption = categoryFilter.options[categoryFilter.selectedIndex];
+        const selectedOption =
+            categoryFilter.options[
+                categoryFilter.selectedIndex
+            ];
 
         if (selectedOption && selectedOption.hidden) {
             categoryFilter.value = "";
@@ -168,140 +192,262 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (menueFilter && categoryFilter) {
         filterCategoryOptions();
-        menueFilter.addEventListener("change", filterCategoryOptions);
+
+        menueFilter.addEventListener(
+            "change",
+            filterCategoryOptions
+        );
     }
+
 });
 </script>
 {% endblock page_css %}
+
 <section class="section shop-section reveal active" id="products">
 
     <div class="section-title">
+
         <span>Luxury Collection</span>
+
         <h2>
+
             {% if menue %}
                 {{ menue.get_name_display }} Jewellery
+
             {% elif category %}
                 {{ category.get_name_display }} Jewellery
+
             {% elif subcategory %}
                 {{ subcategory.get_name_display }}
+
             {% else %}
                 All Jewellery
+
             {% endif %}
+
         </h2>
-        <p>Explore our premium jewellery collection with smart filters.</p>
+
+        <p>
+            Explore our premium jewellery collection with smart filters.
+        </p>
+
     </div>
 
     <div class="shop-layout">
 
-         {% if menue or category or subcategory %}
-            <aside class="filters luxury-filter">
-            <form method="GET">
+        {% if menue or category or subcategory %}
+
+        <aside class="filters luxury-filter">
+
+            <form method="GET" action="">
 
                 <div class="filter-head">
+
                     <h3>Filter Collections</h3>
-                    <p>Find your perfect jewellery</p>
+
+                    <p>
+                        Find your perfect jewellery
+                    </p>
+
                 </div>
 
                 <label>Sort</label>
+
                 <select name="sort">
-                    <option value="latest" {% if selected_sort == "latest" %}selected{% endif %}>Latest</option>
-                    <option value="price_low" {% if selected_sort == "price_low" %}selected{% endif %}>Price Low To High</option>
-                    <option value="price_high" {% if selected_sort == "price_high" %}selected{% endif %}>Price High To Low</option>
-                    <option value="popular" {% if selected_sort == "popular" %}selected{% endif %}>Popular</option>
+
+                    <option value="latest"
+                        {% if selected_sort == "latest" %}
+                            selected
+                        {% endif %}
+                    >
+                        Latest
+                    </option>
+
+                    <option value="price_low"
+                        {% if selected_sort == "price_low" %}
+                            selected
+                        {% endif %}
+                    >
+                        Price Low To High
+                    </option>
+
+                    <option value="price_high"
+                        {% if selected_sort == "price_high" %}
+                            selected
+                        {% endif %}
+                    >
+                        Price High To Low
+                    </option>
+
+                    <option value="popular"
+                        {% if selected_sort == "popular" %}
+                            selected
+                        {% endif %}
+                    >
+                        Popular
+                    </option>
+
                 </select>
 
                 <label>Menue</label>
+
                 <select name="menue" id="menueFilter">
-                    <option value="">All Menues</option>
+
+                    <option value="">
+                        All Menues
+                    </option>
+
                     {% for menue in menues %}
-                        <option value="{{ menue.id }}" {% if selected_menue == menue.id|stringformat:"s" %}selected{% endif %}>
-                            {{ menue.get_name_display }}
-                        </option>
+
+                    <option
+                        value="{{ menue.id }}"
+                        {% if selected_menue == menue.id|stringformat:"s" %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ menue.get_name_display }}
+                    </option>
+
                     {% endfor %}
+
                 </select>
 
                 <label>Category</label>
+
                 <select name="category" id="categoryFilter">
-                    <option value="">All Categories</option>
+
+                    <option value="">
+                        All Categories
+                    </option>
+
                     {% for category in categories %}
-                        <option
-                            value="{{ category.id }}"
-                            data-menue="{{ category.menue.id }}"
-                            {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}
-                        >
-                            {{ category.get_name_display }}
-                        </option>
+
+                    <option
+                        value="{{ category.id }}"
+                        data-menue="{{ category.menue.id }}"
+                        {% if selected_category == category.id|stringformat:"s" %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ category.get_name_display }}
+                    </option>
+
                     {% endfor %}
+
                 </select>
 
                 <label>Sub Category</label>
+
                 <select name="subcategory">
-                    <option value="">All Sub Categories</option>
+
+                    <option value="">
+                        All Sub Categories
+                    </option>
+
                     {% for sub_category in sub_categories %}
-                        <option value="{{ sub_category.id }}" {% if selected_subcategory == sub_category.id|stringformat:"s" %}selected{% endif %}>
-                            {{ sub_category.name }}
-                        </option>
+
+                    <option
+                        value="{{ sub_category.id }}"
+                        {% if selected_subcategory == sub_category.id|stringformat:"s" %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ sub_category.name }}
+                    </option>
+
                     {% endfor %}
+
                 </select>
 
                 <label>Availability</label>
+
                 <select name="availability">
-                    <option value="" {% if selected_availability == "" %}selected{% endif %}>All</option>
-                    <option value="in_stock" {% if selected_availability == "in_stock" %}selected{% endif %}>In Stock</option>
-                    <option value="out_stock" {% if selected_availability == "out_stock" %}selected{% endif %}>Out of Stock</option>
+
+                    <option value=""
+                        {% if selected_availability == "" %}
+                            selected
+                        {% endif %}
+                    >
+                        All
+                    </option>
+
+                    <option value="in_stock"
+                        {% if selected_availability == "in_stock" %}
+                            selected
+                        {% endif %}
+                    >
+                        In Stock
+                    </option>
+
+                    <option value="out_stock"
+                        {% if selected_availability == "out_stock" %}
+                            selected
+                        {% endif %}
+                    >
+                        Out of Stock
+                    </option>
+
                 </select>
 
                 <label>Max Price</label>
+
                 <input
                     type="range"
                     name="max_price"
-                    min="1000"
-                    max="200000"
+                    min="10000"
+                    max="{{ max_product_price|default:200000 }}"
                     step="500"
-                    value="{{ max_price }}"
+                    value="{{ max_price|default:max_product_price }}"
                     id="maxPriceRange"
                 >
 
                 <p class="range-price">
-                    Up to ৳<span id="maxPriceValue">{{ max_price }}</span>
+
+                    Up to ৳
+
+                    <span id="maxPriceValue">
+                        {{ max_price|default:max_product_price|bd_currency }}
+                    </span>
+
                 </p>
 
                 <button class="gold-btn full" type="submit">
+
                     <i class="fa-solid fa-filter"></i>
+
                     Apply Filter
+
                 </button>
 
-                <a href="" class="outline-btn full reset-filter">
+                <a
+                    href="{{ request.path }}"
+                    class="outline-btn full reset-filter"
+                >
                     Reset Filter
                 </a>
 
             </form>
+
         </aside>
-         {% endif %}
+
+        {% endif %}
 
         <div class="products-area">
 
             {% if menue or category or subcategory %}
-                <form method="GET" class="shop-toolbar professional-toolbar">
+
+            <form method="GET" class="shop-toolbar professional-toolbar">
 
                 <p>
-                    Showing <strong>{{ product_count }}</strong> jewellery
+                    Showing
+                    <strong>
+                        {{ product_count }}
+                    </strong>
+                    jewellery
                 </p>
-                
-                <div class="search-box">
-                    <input
-                        type="text"
-                        name="search"
-                        value="{{ search }}"
-                        placeholder="Search jewellery..."
-                    >
-
-                    <button type="submit">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </button>
-                </div>
 
             </form>
+
             {% endif %}
 
             <div class="product-grid" id="productGrid">
@@ -309,74 +455,104 @@ document.addEventListener("DOMContentLoaded", function () {
                 {% for product in products %}
 
                 <article class="product-card luxury-product-card">
-                    
+
                     {% if product.is_available and product.stock > 0 %}
-                    <span class="stock">In Stock</span>
+
+                    <span class="stock">
+                        In Stock
+                    </span>
+
                     {% else %}
-                    <span class="stock out-stock">Out of Stock</span>
+
+                    <span class="stock out-stock">
+                        Out of Stock
+                    </span>
+
                     {% endif %}
-                    
+
                     <button
                         class="wish-btn add-wishlist-btn"
                         data-url="{% url 'pages:add_to_wishlist' product.id %}"
                         type="button"
-                        >
+                    >
                         <i class="fa-regular fa-heart"></i>
                     </button>
-                
-                            <a   href="{% url 'pages:quick_view_product' product.slug %}?next={{ request.get_full_path|urlencode }}">
-                                <div class="product-image">
-                                    {% if product.image %}
-                                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
-                                    {% endif %}
-                                </div>
 
-                                <div class="product-info">
+                    <a href="{% url 'pages:quick_view_product' product.slug %}?next={{ request.get_full_path|urlencode }}">
 
-                                    <span class="product-meta">
-                                        {{ product.menue.get_name_display }} / {{ product.category.get_name_display }}
-                                        {% if product.subcategory %}
-                                            / {{ product.subcategory.name }}
-                                        {% endif %}
-                                    </span>
+                        <div class="product-image">
 
-                                    <h3>{{ product.name }}</h3>
+                            {% if product.image %}
 
-                                    <small class="weight-text">
-                                        {{ product.weight }} Gram
-                                    </small>
+                            <img
+                                src="{{ product.image.url }}"
+                                alt="{{ product.name }}"
+                            >
 
-                                    <div class="price-row">
-                                        <span class="new-price">
-                                            ৳{{ product.final_price|bd_currency }}
-                                        </span>
-                                    </div>
+                            {% endif %}
 
-                                    <small class="price-note">
-                                        ৳{{ product.price_per_gram|bd_currency }} / gram
-                                    </small>
+                        </div>
 
-                            </a>
-                            <div class="product-actions">
+                        <div class="product-info">
 
-                                <button
-                                    class="gold-btn add-cart-btn"
-                                    data-url="{% url 'pages:add_to_cart' product.id %}"
-                                    type="button"
-                                >
-                                    Add Cart
-                                </button>
+                            <span class="product-meta">
 
-                                <button
-                                    class="dark-btn buy-now-btn"
-                                    data-url="{% url 'pages:add_to_cart' product.id %}"
-                                    data-checkout="{% url 'pages:checkout' %}"
-                                    type="button"
-                                >
-                                    Book Now
-                                </button>
+                                {{ product.menue.get_name_display }}
+
+                                /
+
+                                {{ product.category.get_name_display }}
+
+                                {% if product.subcategory %}
+
+                                / {{ product.subcategory.name }}
+
+                                {% endif %}
+
+                            </span>
+
+                            <h3>{{ product.name }}</h3>
+
+                            <small class="weight-text">
+                                {{ product.weight }} Gram
+                            </small>
+
+                            <div class="price-row">
+
+                                <span class="new-price">
+                                    ৳{{ product.final_price|bd_currency }}
+                                </span>
 
                             </div>
+
+                            <small class="price-note">
+                                ৳{{ product.price_per_gram|bd_currency }}
+                                / gram
+                            </small>
+
+                        </div>
+
+                    </a>
+
+                    <div class="product-actions">
+
+                        <button
+                            class="gold-btn add-cart-btn"
+                            data-url="{% url 'pages:add_to_cart' product.id %}"
+                            type="button"
+                        >
+                            Add Cart
+                        </button>
+
+                        <button
+                            class="dark-btn buy-now-btn"
+                            data-url="{% url 'pages:add_to_cart' product.id %}"
+                            data-checkout="{% url 'pages:checkout' %}"
+                            type="button"
+                        >
+                            Book Now
+                        </button>
+
                     </div>
 
                 </article>
@@ -384,9 +560,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 {% empty %}
 
                 <div class="empty-products">
+
                     <i class="fa-solid fa-gem"></i>
+
                     <h3>No jewellery found</h3>
-                    <p>Try changing your filter or search keyword.</p>
+
+                    <p>
+                        Try changing your filter or search keyword.
+                    </p>
+
                 </div>
 
                 {% endfor %}
