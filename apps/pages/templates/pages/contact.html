@@ -1,0 +1,402 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Contact{% endblock %}
+
+{% block page_css %}
+<style>
+
+    /* =========================
+   CONTACT PAGE
+========================= */
+
+.contact-page{
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:40px;
+
+    padding:70px 8%;
+
+    align-items:center;
+}
+
+/* LEFT */
+
+.contact-info{
+    padding-right:20px;
+}
+
+.contact-tag{
+    display:inline-block;
+
+    padding:10px 18px;
+
+    border-radius:30px;
+
+    background:rgba(212,175,55,.12);
+
+    color:#c59b43;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    letter-spacing:1px;
+
+    margin-bottom:18px;
+}
+
+.contact-info h1{
+    font-size:55px;
+
+    line-height:1.1;
+
+    margin-bottom:20px;
+
+    font-family:'Playfair Display',serif;
+
+    color:#111;
+}
+
+.contact-info p{
+    color:#666;
+
+    line-height:1.9;
+
+    margin-bottom:35px;
+
+    font-size:16px;
+}
+
+.contact-box{
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+}
+
+.contact-item{
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:18px;
+
+    padding:22px;
+
+    background:#fff;
+
+    border-radius:22px;
+
+    border:1px solid #eee;
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.05);
+}
+
+.contact-item i{
+    width:55px;
+
+    height:55px;
+
+    border-radius:50%;
+
+    background:#c59b43;
+
+    color:#fff;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:20px;
+
+    flex-shrink:0;
+}
+
+.contact-item h3{
+    margin-bottom:6px;
+
+    font-size:18px;
+
+    color:#111;
+}
+
+.contact-item p{
+    margin:0;
+
+    color:#666;
+
+    line-height:1.7;
+}
+
+/* FORM */
+
+.contact-form-wrap{
+    background:#fff;
+
+    padding:40px;
+
+    border-radius:30px;
+
+    border:1px solid #eee;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.06);
+}
+
+.contact-form{
+    width:100%;
+}
+
+.form-grid{
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:20px;
+}
+
+.form-group{
+    margin-bottom:22px;
+}
+
+.form-group label{
+    display:block;
+
+    margin-bottom:10px;
+
+    font-weight:600;
+
+    color:#111;
+}
+
+.form-group input,
+.form-group textarea{
+    width:100%;
+
+    padding:15px 18px;
+
+    border-radius:16px;
+
+    border:1px solid #ddd;
+
+    outline:none;
+
+    background:#fff;
+
+    font-size:15px;
+
+    transition:.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus{
+    border-color:#c59b43;
+
+    box-shadow:
+        0 0 0 4px rgba(197,155,67,.12);
+}
+
+.contact-btn{
+    width:100%;
+
+    height:58px;
+
+    border-radius:18px;
+
+    font-size:16px;
+
+    font-weight:700;
+}
+
+/* MOBILE */
+
+@media(max-width:992px){
+
+    .contact-page{
+        grid-template-columns:1fr;
+
+        padding:50px 5%;
+    }
+
+    .contact-info{
+        padding-right:0;
+    }
+
+    .contact-info h1{
+        font-size:42px;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .contact-form-wrap{
+        padding:25px;
+    }
+
+    .contact-info h1{
+        font-size:34px;
+    }
+
+    .contact-item{
+        padding:18px;
+    }
+
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class = "cart_border">
+
+<section class="contact-page">
+
+    <!-- LEFT -->
+    <div class="contact-info">
+
+        <span class="contact-tag">
+            Get In Touch
+        </span>
+
+        <h1>
+            Contact Rajanigandha Jewellers Ltd.
+        </h1>
+
+        <p>
+            We are always ready to help you with
+            premium jewellery collections,
+            orders, support and custom designs.
+        </p>
+
+        <div class="contact-box">
+
+            <div class="contact-item">
+                <i class="fa-solid fa-location-dot"></i>
+
+                <div>
+                    <h3>Our Location</h3>
+                    <p>
+                        Shop-25,28, Level-5, Dhaka 1205 <br>
+                        Bashundhara City Shopping Complex
+                    </p>
+                </div>
+            </div>
+
+            <div class="contact-item">
+                <i class="fa-solid fa-phone"></i>
+
+                <div>
+                    <h3>Phone Number</h3>
+                    <p>
+                        +880-1712-007484
+                    </p>
+                </div>
+            </div>
+
+            <div class="contact-item">
+                <i class="fa-solid fa-envelope"></i>
+
+                <div>
+                    <h3>Email Address</h3>
+                    <p>
+                        info@rjlbd.com
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="contact-form-wrap">
+
+        <form method="POST" class="contact-form">
+
+            {% csrf_token %}
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Full Name</label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Enter your full name"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Email Address</label>
+
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        required
+                    >
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number</label>
+
+                <input
+                    type="text"
+                    name="phone"
+                    placeholder="Enter your phone number"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Subject</label>
+
+                <input
+                    type="text"
+                    name="subject"
+                    placeholder="Enter subject"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Message</label>
+
+                <textarea
+                    name="message"
+                    rows="6"
+                    placeholder="Write your message..."
+                    required
+                ></textarea>
+            </div>
+
+            <button type="submit" class="gold-btn contact-btn">
+
+                <i class="fa-solid fa-paper-plane"></i>
+
+                Send Message
+
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+</div>
+{% endblock %}

@@ -27,4 +27,5 @@ urlpatterns = [
      path("jewellery/<slug:menue_slug>/<slug:category_slug>/",views.category_products,name="category_products"),
      path("jewellery/<slug:subcategory_slug>/",views.subcategory_products,name="subcategory_products"),
      path("quick-view/<slug:slug>/",views.quick_view_product,name="quick_view_product"),
+     path("contact/",views.contact,name="contact"),
 ]

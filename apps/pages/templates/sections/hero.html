@@ -1,17 +1,146 @@
-<section class="hero" id="home">
-    <div class="hero-content reveal active">
-        <span>Premium Jewellery House</span>
+{% load static %}
 
-        <h1>Timeless Luxury Crafted For Every Celebration</h1>
+<section class="hero-slider" id="home">
 
-        <p>
-            Discover elegant diamond, gold, wedding and gift collections
-            with a premium shopping experience.
-        </p>
+    <!-- HERO TRACK -->
+    <div class="hero-track">
 
-        <div class="hero-buttons">
-            <a href="#products" class="gold-btn">Shop Collection</a>
-            <a href="#categories" class="glass-btn">Explore Categories</a>
+        <!-- SLIDE 1 -->
+        <div class="hero-slide"
+             style="
+             background-image:
+             url('{% static "images/banner/banner1.jpg" %}');
+             ">
         </div>
+
+        <!-- SLIDE 2 -->
+        <div class="hero-slide"
+             style="
+             background-image:
+             url('{% static "images/banner/banner2.jpg" %}');
+             ">
+        </div>
+
+        <!-- SLIDE 3 -->
+        <div class="hero-slide"
+             style="
+             background-image:
+             url('{% static "images/banner/banner3.jpg" %}');
+             ">
+        </div>
+
     </div>
+
+    <!-- BUTTONS -->
+    <button class="hero-prev">
+        <i class="fa-solid fa-chevron-left"></i>
+    </button>
+
+    <button class="hero-next">
+        <i class="fa-solid fa-chevron-right"></i>
+    </button>
+
+    <!-- DOTS -->
+    <div class="hero-dots">
+
+        <span class="dot active"></span>
+
+        <span class="dot"></span>
+
+        <span class="dot"></span>
+
+    </div>
+
 </section>
+
+<script>
+
+const track =
+document.querySelector(".hero-track");
+
+const slides =
+document.querySelectorAll(".hero-slide");
+
+const dots =
+document.querySelectorAll(".dot");
+
+const nextBtn =
+document.querySelector(".hero-next");
+
+const prevBtn =
+document.querySelector(".hero-prev");
+
+let current = 0;
+
+const totalSlides = slides.length;
+
+/* UPDATE */
+
+function updateSlider(){
+
+    track.style.transform =
+    `translateX(-${current * 100}%)`;
+
+    dots.forEach(dot =>
+        dot.classList.remove("active")
+    );
+
+    dots[current].classList.add("active");
+}
+
+/* NEXT */
+
+function nextSlide(){
+
+    current++;
+
+    if(current >= totalSlides){
+
+        current = 0;
+    }
+
+    updateSlider();
+}
+
+/* PREVIOUS */
+
+function prevSlide(){
+
+    current--;
+
+    if(current < 0){
+
+        current = totalSlides - 1;
+    }
+
+    updateSlider();
+}
+
+/* BUTTON */
+
+nextBtn.onclick = nextSlide;
+
+prevBtn.onclick = prevSlide;
+
+/* DOT */
+
+dots.forEach((dot,index)=>{
+
+    dot.onclick = ()=>{
+
+        current = index;
+
+        updateSlider();
+    };
+
+});
+
+/* AUTO */
+
+setInterval(()=>{
+
+    nextSlide();
+
+},4000);
+
+</script>

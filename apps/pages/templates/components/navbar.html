@@ -15,7 +15,42 @@
             Home
         </a>
 
-        <!-- JEWELLERY DROPDOWN -->
+        <!-- Profile DROPDOWN -->
+        <div class="nav-dropdown">
+
+            <button class="dropdown-btn">
+                Company Profile
+                <i class="fa-solid fa-angle-down"></i>
+            </button>
+
+            <div class="dropdown-menu">
+
+                    <div class="dropdown-item">
+
+                        <a
+                            href=""
+                            class="dropdown-title"
+                        >
+                        About Us
+                        </a>
+                        <a
+                            href=""
+                            class="dropdown-title"
+                        >
+                        Our Mission
+                        </a>
+                        <a
+                            href=""
+                            class="dropdown-title"
+                        >
+                        Our Vision
+                        </a>
+
+                    </div>
+
+            </div>
+
+        </div>
         <div class="nav-dropdown">
 
             <button class="dropdown-btn">
@@ -66,16 +101,10 @@
 
         </div>
 
-        <!-- NAV LINKS -->
-        <a href="#products">
-            Shop
+        <a href="{% url 'pages:contact' %}">
+            Today Rate
         </a>
-
-        <a href="#track">
-            Track Order
-        </a>
-
-        <a href="#footer">
+        <a href="{% url 'pages:contact' %}">
             Contact
         </a>
 

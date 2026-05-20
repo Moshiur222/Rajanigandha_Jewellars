@@ -303,7 +303,7 @@ def get_filter_base_context():
             max_product_price = product.final_price
 
     max_product_price += Decimal("10000")
-    
+
     if max_product_price <= 0:
         max_product_price = Decimal("200000")
 
@@ -811,3 +811,7 @@ def checkout_view(request):
         "total_items": total_items,
         "profile": profile,
     })
+
+
+def contact(request):
+    return render(request, "pages/contact.html")
