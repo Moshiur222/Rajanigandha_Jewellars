@@ -23,4 +23,18 @@ urlpatterns = [
     path("menue/order/", views.update_menue_order, name="menue_order"),
     path("profile/", views.admin_profile, name="profile"),
     path("settings/", views.admin_settings, name="settings"),
+    path("mission/",views.mission,name="mission"),
+    path("vision/",views.vision,name="vision"),
+    
+    path("video-gallery/",views.video_gallery,name="video_gallery"),
+
+    path("photo-album/",views.photo_album,name="photo_album"),
+    path("photo-album/add/",views.photo_album_add,name="photo_album_add"),
+    path("photo-album/update/<slug:slug>/",views.photo_album_update,name="photo_album_update"),
+    path("photo-album/delete/<slug:slug>/",views.photo_album_delete,name="photo_album_delete"),
+
+    path('photo-gallery/<slug:slug>/', views.photo_gallery, name='photo_gallery'),
+    path('photo-gallery/<slug:slug>/add/', views.photo_gallery_add, name='photo_gallery_add'),
+    path('photo-gallery/update/<slug:slug>/', views.photo_gallery_update, name='photo_gallery_update'),
+    path('photo-gallery/delete/<slug:slug>/', views.photo_gallery_delete, name='photo_gallery_delete'),
 ]

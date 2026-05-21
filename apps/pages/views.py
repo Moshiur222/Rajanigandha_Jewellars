@@ -425,7 +425,7 @@ def menue_products(request, slug):
         products
     )
 
-    return render(request, "pages/menue_products.html", {
+    return render(request, "pages/products.html", {
         "menue": menue,
         "products": products,
         "featured_products": [
@@ -463,7 +463,7 @@ def category_products(request, menue_slug, category_slug):
         products
     )
 
-    return render(request, "pages/category_products.html", {
+    return render(request, "pages/products.html", {
         "menue": menue,
         "category": category,
         "products": products,
@@ -815,3 +815,100 @@ def checkout_view(request):
 
 def contact(request):
     return render(request, "pages/contact.html")
+
+def our_vision(request):
+    vision = Vision.objects.all()
+    context = {
+        "vision" : vision,
+    }
+    return render(request, "pages/vision.html", context)
+
+def our_mision(request):
+    mission = Mission.objects.all()
+    context = {
+        "mission" : mission,
+    }
+    return render(request, "pages/mision.html", context)
+
+def live_rate(request):
+
+    url = "https://www.goldr.org/price.js?gttm"
+
+    gold_prices = []
+    silver_prices = []
+
+    try:
+        response = requests.get(url, timeout=20)
+        js_text = response.text
+
+        gold_match = re.search(
+            r'const GoldrPriceTable_goldData = (\[.*?\]);',
+            js_text,
+            re.DOTALL
+        )
+
+        silver_match = re.search(
+            r'const GoldrPriceTable_silverData = (\[.*?\]);',
+            js_text,
+            re.DOTALL
+        )
+
+        if gold_match:
+            gold_data = json.loads(gold_match.group(1))
+
+            gold_prices = [
+                {"name": "২২ ক্যারেট সোনার দাম", "price": Decimal(str(gold_data[0]["bg_raw"]))},
+                {"name": "২১ ক্যারেট সোনার দাম", "price": Decimal(str(gold_data[1]["bg_raw"]))},
+                {"name": "১৮ ক্যারেট সোনার দাম", "price": Decimal(str(gold_data[2]["bg_raw"]))},
+                {"name": "সনাতন পদ্ধতির সোনার দাম", "price": Decimal(str(gold_data[3]["bg_raw"]))},
+            ]
+
+        if silver_match:
+            silver_data = json.loads(silver_match.group(1))
+
+            silver_prices = [
+                {"name": "২২ ক্যারেট রুপার দাম", "price": Decimal(str(silver_data[0]["bg_raw"]))},
+                {"name": "২১ ক্যারেট রুপার দাম", "price": Decimal(str(silver_data[1]["bg_raw"]))},
+                {"name": "১৮ ক্যারেট রুপার দাম", "price": Decimal(str(silver_data[2]["bg_raw"]))},
+                {"name": "সনাতন পদ্ধতির রুপার দাম", "price": Decimal(str(silver_data[3]["bg_raw"]))},
+            ]
+
+    except Exception as e:
+        print(e)
+
+    return render(request, "pages/live_rate.html", {
+        "gold_prices": gold_prices,
+        "silver_prices": silver_prices,
+    })
+
+
+
+def photo_album(request):
+    albums = PhotoAlbum.objects.all()
+
+    return render(request, "pages/photo_album.html", {
+        "albums": albums
+    })
+
+
+def photo_gallery(request, slug):
+    album = get_object_or_404(PhotoAlbum, slug=slug)
+    photos = album.photos.all()
+
+    return render(request, "pages/photo_gallery.html", {
+        "album": album,
+        "photos": photos
+    })
+
+
+def video_gallery(request):
+
+    videos = VideoGallery.objects.all()
+
+    return render(
+        request,
+        "pages/video_gallery.html",
+        {
+            "videos": videos
+        }
+    )

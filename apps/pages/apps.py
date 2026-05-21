@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+import os
 
 
 class PagesConfig(AppConfig):
@@ -9,7 +10,8 @@ class PagesConfig(AppConfig):
 
     def ready(self):
 
-        from .scheduler import start
-        start()
+        if os.environ.get("RUN_MAIN") == "true":
 
-        import apps.pages.signals
+            from .scheduler import start
+
+            start()

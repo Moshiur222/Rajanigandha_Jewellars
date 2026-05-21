@@ -1,0 +1,886 @@
+{% extends "admin/base/base.html" %}
+{% load static %}
+
+{% block admin_css %}
+<style>
+    /* Photo Album Management Styles */
+    .album-management-container {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 24px;
+    }
+
+    /* Album Form Styles */
+    .album-form-wrapper {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .album-form-wrapper .card-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border-color);
+        background: linear-gradient(to right, var(--white), var(--light-1));
+    }
+
+    .album-form-wrapper .card-header h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .album-form-wrapper .card-header h3 i {
+        color: var(--primary);
+        font-size: 20px;
+    }
+
+    .album-form-wrapper .card-body {
+        padding: 28px;
+    }
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 24px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+    }
+
+    .form-group .required:after {
+        content: '*';
+        color: var(--danger);
+        margin-left: 4px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 14px;
+        color: var(--text-primary);
+        background: var(--white);
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius);
+        transition: var(--transition);
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+
+    .form-control::placeholder {
+        color: var(--text-muted);
+    }
+
+    /* File Upload Styles */
+    .file-upload-area {
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius);
+        padding: 24px;
+        text-align: center;
+        background: var(--light-1);
+        cursor: pointer;
+        transition: var(--transition);
+        position: relative;
+    }
+
+    .file-upload-area:hover {
+        border-color: var(--primary);
+        background: rgba(99, 102, 241, 0.05);
+    }
+
+    .file-upload-area.has-file {
+        border-color: var(--success);
+        background: rgba(16, 185, 129, 0.05);
+    }
+
+    .file-upload-icon {
+        font-size: 40px;
+        color: var(--text-muted);
+        margin-bottom: 12px;
+    }
+
+    .file-upload-text {
+        font-size: 14px;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    .file-upload-subtext {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 4px;
+    }
+
+    .file-upload-input {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        cursor: pointer;
+    }
+
+    /* Cover Image Preview */
+    .cover-preview-container {
+        margin-top: 16px;
+        position: relative;
+        display: inline-block;
+    }
+
+    .cover-preview {
+        width: 200px;
+        height: 140px;
+        object-fit: cover;
+        border-radius: var(--radius);
+        border: 3px solid var(--border-color);
+        box-shadow: var(--shadow);
+    }
+
+    .cover-preview-remove {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        width: 30px;
+        height: 30px;
+        background: var(--danger);
+        color: var(--white);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 14px;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+        border: none;
+    }
+
+    .cover-preview-remove:hover {
+        background: var(--danger-dark);
+        transform: scale(1.1);
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-color);
+        margin-top: 24px;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: var(--radius);
+        transition: var(--transition);
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn i {
+        font-size: 15px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        color: var(--white);
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        color: var(--white);
+    }
+
+    .btn-secondary {
+        background: var(--light-1);
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+        background: var(--light-2);
+        color: var(--text-primary);
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, var(--danger), #f87171);
+        color: var(--white);
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        color: var(--white);
+    }
+
+    .btn-info {
+        background: linear-gradient(135deg, var(--info), #38bdf8);
+        color: var(--white);
+        box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+    }
+
+    .btn-info:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+        color: var(--white);
+    }
+
+    .btn-sm {
+        padding: 8px 14px;
+        font-size: 12px;
+    }
+
+    /* Table Card Styles */
+    .table-card {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .table-card .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .table-card .card-header h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .table-card .card-header h3 i {
+        color: var(--primary);
+        font-size: 20px;
+    }
+
+    .album-count {
+        font-size: 13px;
+        color: var(--text-muted);
+        background: var(--light-1);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    /* Table Styles */
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 16px 20px;
+        text-align: left;
+    }
+
+    .data-table th {
+        background: var(--light-1);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-secondary);
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+    }
+
+    .data-table td {
+        font-size: 14px;
+        color: var(--text-primary);
+        border-bottom: 1px solid var(--border-color);
+        vertical-align: middle;
+    }
+
+    .data-table tbody tr {
+        transition: var(--transition);
+    }
+
+    .data-table tbody tr:hover {
+        background: var(--light-1);
+    }
+
+    .data-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Album Cover Thumbnail */
+    .album-cover {
+        width: 70px;
+        height: 55px;
+        object-fit: cover;
+        border-radius: 8px;
+        box-shadow: var(--shadow-sm);
+        border: 2px solid var(--border-color);
+    }
+
+    .album-cover-placeholder {
+        width: 70px;
+        height: 55px;
+        border-radius: 8px;
+        background: var(--light-1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 20px;
+        border: 2px dashed var(--border-color);
+    }
+
+    /* Album Title */
+    .album-title {
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    /* Photo Count Badge */
+    .photo-count-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--primary);
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-muted);
+    }
+
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 16px;
+        color: var(--text-muted);
+        opacity: 0.5;
+    }
+
+    .empty-state p {
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+    /* Info Card */
+    .album-info-card {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        height: fit-content;
+    }
+
+    .album-info-card .card-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border-color);
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    }
+
+    .album-info-card .card-header h4 {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+    }
+
+    .album-info-card .card-body {
+        padding: 24px;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .info-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .info-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+
+    .info-icon.bg-primary-light {
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--primary);
+    }
+
+    .info-icon.bg-success-light {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success);
+    }
+
+    .info-icon.bg-warning-light {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning);
+    }
+
+    .info-content h5 {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+
+    .info-content p {
+        font-size: 13px;
+        color: var(--text-secondary);
+        line-height: 1.5;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 1200px) {
+        .album-management-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .album-info-card {
+            order: -1;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .album-form-wrapper .card-body {
+            padding: 20px;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+        }
+        
+        .form-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .action-buttons .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block admin_main %}
+<div class="page-content">
+    <!-- Main Content Grid -->
+    <div class="album-management-container">
+        
+        <!-- Left Column: Form & Table -->
+        <div>
+            
+            <!-- Album Form Card -->
+            <div class="album-form-wrapper" style="margin-bottom: 24px;">
+                <div class="card-header">
+                    <h3>
+                        <i class="fas fa-{% if album %}edit{% else %}plus-circle{% endif %}"></i>
+                        {% if album %}Update Album{% else %}Create New Album{% endif %}
+                    </h3>
+                </div>
+
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" id="albumForm">
+                        {% csrf_token %}
+
+                        <div class="form-group">
+                            <label class="required">Album Title</label>
+                            <input
+                                type="text"
+                                name="title"
+                                class="form-control"
+                                placeholder="Enter album title"
+                                value="{{ album.title|default:'' }}"
+                                required
+                                maxlength="200"
+                                id="titleInput"
+                            >
+                            <div style="display: flex; justify-content: flex-end; font-size: 12px; color: var(--text-muted); margin-top: 6px;" id="titleCount">0/200</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Cover Image</label>
+                            
+                            {% if album.cover_image %}
+                            <div class="cover-preview-container" id="coverPreviewContainer">
+                                <img src="{{ album.cover_image.url }}" class="cover-preview" alt="Album Cover">
+                                <button type="button" class="cover-preview-remove" id="removeCover" title="Remove Cover Image">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            {% endif %}
+
+                            <div class="file-upload-area {% if album.cover_image %}has-file{% endif %}" id="fileUploadArea">
+                                <div class="file-upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <div class="file-upload-text">
+                                    {% if album.cover_image %}
+                                        Click to change cover image
+                                    {% else %}
+                                        Drag & drop cover image here or click to browse
+                                    {% endif %}
+                                </div>
+                                <div class="file-upload-subtext">
+                                    Supported formats: JPG, PNG, GIF (Max size: 5MB, Recommended: 800x600)
+                                </div>
+                                <input
+                                    type="file"
+                                    name="cover_image"
+                                    class="file-upload-input"
+                                    accept="image/*"
+                                    id="coverImageInput"
+                                    {% if not album %}required{% endif %}
+                                >
+                            </div>
+                        </div>
+
+                        <div class="form-actions ">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-{% if album %}check{% else %}save{% endif %}"></i>
+                                {% if album %}Update Album{% else %}Create Album{% endif %}
+                            </button>
+                            <a href="{% url 'dashboard:photo_album' %}" 
+                                class="btn btn-dark">
+                                    Cancel
+                                </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Info Card -->
+        <div class="album-info-card">
+            <div class="card-header">
+                <h4>
+                    <i class="fas fa-info-circle"></i>
+                    Album Guidelines
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="info-item">
+                    <div class="info-icon bg-primary-light">
+                        <i class="fas fa-heading"></i>
+                    </div>
+                    <div class="info-content">
+                        <h5>Descriptive Title</h5>
+                        <p>Use a clear, descriptive title that reflects the content of your photo album.</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon bg-success-light">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <div class="info-content">
+                        <h5>Quality Cover Image</h5>
+                        <p>Select an attractive cover image that represents the album's content. Recommended size: 800x600 pixels.</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon bg-warning-light">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <div class="info-content">
+                        <h5>Photo Management</h5>
+                        <p>After creating an album, click "Gallery" to add, organize, and manage photos within the album.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block admin_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Character count for title
+        const titleInput = document.getElementById('titleInput');
+        const titleCount = document.getElementById('titleCount');
+        
+        if (titleInput && titleCount) {
+            function updateCharCount() {
+                const current = titleInput.value.length;
+                const max = 200;
+                titleCount.textContent = `${current}/${max}`;
+                
+                titleCount.style.color = 'var(--text-muted)';
+                
+                if (current >= max * 0.9) {
+                    titleCount.style.color = 'var(--danger)';
+                } else if (current >= max * 0.7) {
+                    titleCount.style.color = 'var(--warning)';
+                }
+            }
+            
+            updateCharCount();
+            titleInput.addEventListener('input', updateCharCount);
+        }
+
+        // Cover image upload preview
+        const coverImageInput = document.getElementById('coverImageInput');
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const coverPreviewContainer = document.getElementById('coverPreviewContainer');
+
+        if (coverImageInput && fileUploadArea) {
+            // Click to upload
+            fileUploadArea.addEventListener('click', function(e) {
+                if (e.target !== coverImageInput) {
+                    coverImageInput.click();
+                }
+            });
+
+            // File selection handler
+            coverImageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Validate file type
+                    if (!file.type.startsWith('image/')) {
+                        showNotification('Please select an image file.', 'error');
+                        this.value = '';
+                        return;
+                    }
+
+                    // Validate file size (5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        showNotification('File size must be less than 5MB.', 'error');
+                        this.value = '';
+                        return;
+                    }
+
+                    handleImagePreview(file);
+                }
+            });
+
+            // Drag and drop handlers
+            fileUploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.borderColor = 'var(--primary)';
+                this.style.background = 'rgba(99, 102, 241, 0.05)';
+            });
+
+            fileUploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.style.borderColor = 'var(--border-color)';
+                this.style.background = 'var(--light-1)';
+                
+                if (coverImageInput.files.length > 0 || (coverPreviewContainer && coverPreviewContainer.querySelector('img'))) {
+                    this.classList.add('has-file');
+                }
+            });
+
+            fileUploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.borderColor = 'var(--border-color)';
+                this.style.background = 'var(--light-1)';
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    
+                    // Validate file type
+                    if (!file.type.startsWith('image/')) {
+                        showNotification('Please select an image file.', 'error');
+                        return;
+                    }
+
+                    // Validate file size
+                    if (file.size > 5 * 1024 * 1024) {
+                        showNotification('File size must be less than 5MB.', 'error');
+                        return;
+                    }
+
+                    coverImageInput.files = files;
+                    handleImagePreview(file);
+                }
+            });
+        }
+
+        // Handle image preview
+        function handleImagePreview(file) {
+            fileUploadArea.classList.add('has-file');
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (coverPreviewContainer) {
+                    // Update existing preview
+                    const img = coverPreviewContainer.querySelector('img');
+                    if (img) {
+                        img.src = e.target.result;
+                    }
+                } else {
+                    // Create new preview container
+                    const previewDiv = document.createElement('div');
+                    previewDiv.id = 'coverPreviewContainer';
+                    previewDiv.className = 'cover-preview-container';
+                    previewDiv.innerHTML = `
+                        <img src="${e.target.result}" class="cover-preview" alt="Cover Preview">
+                        <button type="button" class="cover-preview-remove" id="removeCover" title="Remove Cover Image">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    
+                    fileUploadArea.parentNode.insertBefore(previewDiv, fileUploadArea);
+                    
+                    // Add event listener to remove button
+                    const removeBtn = previewDiv.querySelector('#removeCover');
+                    if (removeBtn) {
+                        removeBtn.addEventListener('click', removeCoverImage);
+                    }
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Remove cover image
+        function removeCoverImage() {
+            const previewContainer = document.getElementById('coverPreviewContainer');
+            
+            if (previewContainer) {
+                previewContainer.remove();
+            }
+            
+            if (coverImageInput) {
+                coverImageInput.value = '';
+            }
+            
+            if (fileUploadArea) {
+                fileUploadArea.classList.remove('has-file');
+            }
+        }
+
+        // Remove button event listener
+        const removeCoverBtn = document.getElementById('removeCover');
+        if (removeCoverBtn) {
+            removeCoverBtn.addEventListener('click', removeCoverImage);
+        }
+
+        // Notification function
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 16px 20px;
+                background: ${type === 'error' ? 'var(--danger)' : 'var(--primary)'};
+                color: white;
+                border-radius: var(--radius);
+                box-shadow: var(--shadow-lg);
+                font-size: 14px;
+                font-weight: 500;
+                z-index: 10000;
+                animation: slideInRight 0.3s ease;
+                max-width: 400px;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Form validation
+        const albumForm = document.getElementById('albumForm');
+        if (albumForm) {
+            albumForm.addEventListener('submit', function(e) {
+                const title = this.querySelector('[name="title"]');
+                
+                if (title && !title.value.trim()) {
+                    e.preventDefault();
+                    showNotification('Please enter an album title.', 'error');
+                    title.focus();
+                    return false;
+                }
+            });
+        }
+
+        // Add slide out animation for notifications
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideOutRight {
+                from {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateX(100%);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    });
+</script>
+{% endblock %}

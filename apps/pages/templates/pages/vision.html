@@ -1,0 +1,141 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}
+Our Vision
+{% endblock title %}
+
+{% block page_css %}
+<style>
+
+.vision-page{
+    padding:40px 4%;
+    margin: 8px;
+}
+.vision-tag{
+    display:inline-block;
+    padding:10px 18px;
+    border-radius:30px;
+    background:rgba(212,175,55,.12);
+    color:#c59b43;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:1px;
+    margin-bottom:18px;
+}
+
+.vision-title{
+    font-size:42px;
+    line-height:1.2;
+    margin:0 0 25px;
+    color:#111;
+    font-family:'Playfair Display',serif;
+}
+
+.vision-content-wrapper{
+    display:block;
+    overflow:hidden;
+}
+
+.vision-image-box{
+    float:left;
+    width:55%;
+    margin-right:24px;
+    margin-bottom:12px;
+}
+
+.vision-image-box img{
+    width:100%;
+    height:auto;
+    display:block;
+    border-radius:8px;
+    border:1px solid #ddd;
+}
+
+.vision-description{
+    font-size:19px;
+    line-height:1.65;
+    color:#111;
+    text-align:justify;
+}
+
+.vision-description p{
+    margin:0 0 16px;
+    text-align:justify;
+}
+
+@media(max-width:768px){
+    .vision-page{
+        padding:25px 12px;
+    }
+
+    .vision-title{
+        font-size:30px;
+    }
+
+    .vision-image-box{
+        float:none;
+        width:100%;
+        margin:0 0 20px 0;
+    }
+
+    .vision-description{
+        font-size:17px;
+    }
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cart_border">
+
+<section class="vision-page">
+
+    <article class="vision-article">
+
+        <span class="vision-tag">
+            OUR VISION
+        </span>
+
+        <h1 class="vision-title">
+            Crafting Timeless Luxury & Elegance
+        </h1>
+
+        <div class="vision-content-wrapper">
+
+            <div class="vision-image-box">
+                <img
+                    src="{% static 'images/banner/banner1.jpg' %}"
+                    alt="Our Vision"
+                >
+            </div>
+
+            <div class="vision-description">
+
+                <p>
+                    Rajanigandha Jewellers envisions becoming one of the most trusted luxury jewellery brands in Bangladesh by delivering exceptional craftsmanship, premium quality, and timeless beauty.
+                </p>
+
+                <p>
+                    Our goal is to redefine elegance through innovative jewellery designs while preserving tradition, heritage, and customer trust.
+                </p>
+
+                <p>
+                    We strive to inspire confidence and celebrate every precious moment with jewellery that reflects sophistication, authenticity, and perfection.
+                </p>
+
+                <p>
+                    Every ornament we create is designed to carry emotion, beauty, and long-lasting value for our customers.
+                </p>
+
+            </div>
+
+        </div>
+
+    </article>
+
+</section>
+
+</div>
+{% endblock %}

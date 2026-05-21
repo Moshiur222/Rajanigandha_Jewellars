@@ -13,7 +13,7 @@
 
 .product-grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(280px,0.3fr));
+    grid-template-columns:repeat(auto-fit,minmax(280px,0.5fr));
     gap:28px;
     margin: 8px;
     padding-bottom: 8px;
@@ -192,7 +192,7 @@
 @media(max-width:768px){
 
     .product-grid{
-        grid-template-columns:0.5fr;
+        grid-template-columns:1fr;
     }
 
     .luxury-product-card .product-image{
@@ -241,11 +241,12 @@
 
 {% endblock page_css %}
 <section class="section reveal active">
+    <hr class="hr_tag">
     <div class="section-title">
         <span>Exclusive Selection</span>
         <h2>Featured Jewellery</h2>
     </div>
-
+    <hr class="hr_tag">
     <div class="products-area">
 
         <div class="product-grid" id="productGrid">

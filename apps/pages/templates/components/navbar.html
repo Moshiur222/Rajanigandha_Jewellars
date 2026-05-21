@@ -19,7 +19,7 @@
         <div class="nav-dropdown">
 
             <button class="dropdown-btn">
-                Company Profile
+                About Us
                 <i class="fa-solid fa-angle-down"></i>
             </button>
 
@@ -28,22 +28,28 @@
                     <div class="dropdown-item">
 
                         <a
-                            href=""
-                            class="dropdown-title"
-                        >
-                        About Us
-                        </a>
-                        <a
-                            href=""
+                            href="{% url 'pages:our_mision' %}"
                             class="dropdown-title"
                         >
                         Our Mission
                         </a>
                         <a
-                            href=""
+                            href="{% url 'pages:our_vision' %}"
                             class="dropdown-title"
                         >
                         Our Vision
+                        </a>
+                        <a
+                            href="{% url 'pages:photo_album' %}"
+                            class="dropdown-title"
+                        >
+                        Our Photo Gallery
+                        </a>
+                        <a
+                            href="{% url 'pages:video_gallery' %}"
+                            class="dropdown-title"
+                        >
+                        Our Video Gallery
                         </a>
 
                     </div>
@@ -51,6 +57,7 @@
             </div>
 
         </div>
+        
         <div class="nav-dropdown">
 
             <button class="dropdown-btn">
@@ -101,7 +108,7 @@
 
         </div>
 
-        <a href="{% url 'pages:contact' %}">
+        <a href="{% url 'pages:live_rate' %}">
             Today Rate
         </a>
         <a href="{% url 'pages:contact' %}">

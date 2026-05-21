@@ -76,10 +76,10 @@
 
 .product-detail-page{
     padding:60px 6%;
-    background: #AFB9C5;
     max-width:1400px;
     margin:0 auto;
     position:relative;
+    margin: 8px;
 }
 
 .breadcrumb{
@@ -816,7 +816,8 @@
 
 {% block content %}
 
-<button class="close-product" onclick="window.location.href='{{ next_url }}'" title="Close">
+<div class="cart_border">
+    <button class="close-product" onclick="window.location.href='{{ next_url }}'" title="Close">
     <i class="fa-solid fa-xmark"></i>
 </button>
 
@@ -1092,5 +1093,6 @@
     </div>
 
 </section>
+</div>
 
 {% endblock content %}

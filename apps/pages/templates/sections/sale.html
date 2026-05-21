@@ -1,12 +1,13 @@
 {% load static %}
 {% load custom_filters %}
 <section class="section sale-bg reveal active">
+    <hr class="hr_tag">
     {% if sale_products %}
     <div class="section-title">
         <span>Limited Deal</span>
         <h2>Sale Jewellery</h2>
     </div>
-
+    <hr class="hr_tag">
     <div class="product-grid" id="saleGrid">
 
         {% for product in sale_products %}
@@ -107,15 +108,16 @@
                 </div>
 
             </div>
-
+            
         </article>
-
+        
         {% empty %}
-
+        
         <p>No sale products found.</p>
-
+        
         {% endfor %}
-
+        
     </div>
     {% endif %}
+    <hr class="hr_tag">
 </section>

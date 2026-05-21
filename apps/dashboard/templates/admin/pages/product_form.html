@@ -144,7 +144,7 @@
 
             <div class="admin-field">
                 <label>Category *</label>
-                <select name="category" id="categorySelect" required>
+                <select name="category" id="categorySelect">
                     <option value="">Select Category</option>
                     {% for category in categories %}
                         <option value="{{ category.id }}" data-menue="{{ category.menue_id }}" {% if edit_product and edit_product.category_id == category.id %}selected{% endif %}>
@@ -156,7 +156,7 @@
 
             <div class="admin-field">
                 <label>Sub Category</label>
-                <select name="subcategory">
+                <select name="subcategory" required>
                     <option value="">Select Category</option>
                     {% for sub_category in sub_categories %}
                         <option value="{{ sub_category.id }}" {% if edit_product and edit_product.subcategory_id == sub_category.id %}selected{% endif %}>

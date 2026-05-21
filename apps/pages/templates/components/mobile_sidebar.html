@@ -21,10 +21,47 @@
             Home
         </a>
 
+        <!-- About Us Dropdown -->
         <div class="mobile-dropdown">
 
             <button class="mobile-dropdown-btn" type="button">
-                <span><i class="fa-solid fa-gem"></i> Jewellery</span>
+                <span>
+                    <i class="fa-solid fa-building"></i>
+                    About Us
+                </span>
+                <i class="fa-solid fa-angle-down"></i>
+            </button>
+
+            <div class="mobile-dropdown-content">
+
+                <a href="{% url 'pages:our_mision' %}">
+                    Our Mission
+                </a>
+
+                <a href="{% url 'pages:our_vision' %}">
+                    Our Vision
+                </a>
+
+                <a href="{% url 'pages:photo_album' %}">
+                    Our Photo Gallery
+                </a>
+
+                <a href="{% url 'pages:video_gallery' %}">
+                    Our Video Gallery
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- Jewellery Dropdown -->
+        <div class="mobile-dropdown">
+
+            <button class="mobile-dropdown-btn" type="button">
+                <span>
+                    <i class="fa-solid fa-gem"></i>
+                    Jewellery
+                </span>
                 <i class="fa-solid fa-angle-down"></i>
             </button>
 
@@ -43,11 +80,13 @@
 
                     {% if menue.categories.all %}
                     <div class="mobile-submenu-content">
+
                         {% for category in menue.categories.all %}
-                            <a href="{% url 'pages:category_products' menue.slug category.slug %}">
-                                {{ category.get_name_display }}
-                            </a>
+                        <a href="{% url 'pages:category_products' menue.slug category.slug %}">
+                            {{ category.get_name_display }}
+                        </a>
                         {% endfor %}
+
                     </div>
                     {% endif %}
 
@@ -55,19 +94,15 @@
                 {% endfor %}
 
             </div>
+
         </div>
 
-        <a href="#products">
-            <i class="fa-solid fa-bag-shopping"></i>
-            Shop
+        <a href="{% url 'pages:live_rate' %}">
+            <i class="fa-solid fa-chart-line"></i>
+            Today Rate
         </a>
 
-        <a href="#track">
-            <i class="fa-solid fa-truck-fast"></i>
-            Track Order
-        </a>
-
-        <a href="#footer">
+        <a href="{% url 'pages:contact' %}">
             <i class="fa-solid fa-phone"></i>
             Contact
         </a>

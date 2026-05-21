@@ -28,4 +28,10 @@ urlpatterns = [
      path("jewellery/<slug:subcategory_slug>/",views.subcategory_products,name="subcategory_products"),
      path("quick-view/<slug:slug>/",views.quick_view_product,name="quick_view_product"),
      path("contact/",views.contact,name="contact"),
+     path("live-rate/",views.live_rate,name="live_rate"), 
+     path("our-vision/",views.our_vision,name="our_vision"), 
+     path("our-mision/",views.our_mision,name="our_mision"),
+     path("photo-album/", views.photo_album, name="photo_album"),
+     path("photo-gallery/<slug:slug>/", views.photo_gallery, name="photo_gallery"),
+     path("video-gallery/", views.video_gallery, name="video_gallery"),
 ]

@@ -4,8 +4,8 @@
 
 .shop-section {
   padding: 10px;
-  margin-top: 24px;
-  margin-bottom: 24px;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
 .shop-layout {
@@ -157,7 +157,7 @@
   }
 
   .product-grid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 0.5fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 18px;
   }
 }
@@ -196,7 +196,7 @@
   }
 
   .product-grid {
-    grid-template-columns: 0.5fr;
+    grid-template-columns: 1fr;
     gap: 14px;
   }
 }

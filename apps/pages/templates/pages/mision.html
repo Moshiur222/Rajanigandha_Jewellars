@@ -1,0 +1,146 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}
+Our Mission
+{% endblock title %}
+
+{% block page_css %}
+<style>
+
+.mission-page{
+    padding:40px 4%;
+    margin: 8px;
+}
+.mission-tag{
+    display:inline-block;
+    padding:10px 18px;
+    border-radius:30px;
+    background:rgba(212,175,55,.12);
+    color:#c59b43;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:1px;
+    margin-bottom:18px;
+}
+
+.mission-title{
+    font-size:42px;
+    line-height:1.2;
+    margin:0 0 25px;
+    color:#111;
+    font-family:'Playfair Display',serif;
+}
+
+.mission-content-wrapper{
+    display:block;
+    overflow:hidden;
+}
+
+.mission-image-box{
+    float:left;
+    width:55%;
+    margin-right:24px;
+    margin-bottom:12px;
+}
+
+.mission-image-box img{
+    width:100%;
+    height:auto;
+    display:block;
+    border-radius:8px;
+    border:1px solid #ddd;
+}
+
+.mission-description{
+    font-size:19px;
+    line-height:1.65;
+    color:#111;
+    text-align:justify;
+}
+
+.mission-description p{
+    margin:0 0 16px;
+    text-align:justify;
+
+}
+
+@media(max-width:768px){
+
+    .mission-page{
+        padding:25px 12px;
+    }
+
+    .mission-title{
+        font-size:30px;
+    }
+
+    .mission-image-box{
+        float:none;
+        width:100%;
+        margin:0 0 20px 0;
+    }
+
+    .mission-description{
+        font-size:17px;
+    }
+
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cart_border">
+
+<section class="mission-page">
+
+    <article class="mission-article">
+
+        <span class="mission-tag">
+            OUR MISSION
+        </span>
+
+        <h1 class="mission-title">
+            Creating Trust Through Timeless Jewellery
+        </h1>
+
+        <div class="mission-content-wrapper">
+
+            <div class="mission-image-box">
+
+                <img
+                    src="{% static 'images/banner/banner1.jpg' %}"
+                    alt="Our Mission"
+                >
+
+            </div>
+
+            <div class="mission-description">
+
+                <p>
+                    Our mission is to provide premium quality jewellery that combines elegance, craftsmanship, and customer trust.
+                </p>
+
+                <p>
+                    At Rajanigandha Jewellers, we are committed to offering authentic designs, reliable service, and a luxury buying experience for every customer.
+                </p>
+
+                <p>
+                    We believe every piece of jewellery should carry beauty, emotion, and long-lasting value.
+                </p>
+
+                <p>
+                    Through innovation, dedication, and premium craftsmanship, we aim to create jewellery that becomes a timeless symbol of elegance and emotion.
+                </p>
+
+            </div>
+
+        </div>
+
+    </article>
+
+</section>
+
+</div>
+{% endblock %}

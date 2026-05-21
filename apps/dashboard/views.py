@@ -9,7 +9,7 @@ from apps.dashboard.models import (User)
 from django.db.models import Sum, Count
 from django.utils import timezone
 from datetime import timedelta
-from apps.pages.models import Product, Order, OrderItem, Cart, Wishlist
+from apps.pages.models import *
 from apps.pages.utils import *
 
 
@@ -859,4 +859,294 @@ def admin_stores(request):
     return render(
         request,
         "admin/pages/stores.html"
+    )
+
+
+# =========================
+# MISSION
+# =========================
+
+def mission(request):
+
+    return render(
+        request,
+        "admin/pages/mission.html"
+    )
+
+
+# =========================
+# VISION
+# =========================
+
+def vision(request):
+
+    return render(
+        request,
+        "admin/pages/vision.html"
+    )
+
+
+# =========================
+# PHOTO ALBUM
+# =========================
+from django.contrib import messages
+
+def photo_album(request):
+
+    albums = PhotoAlbum.objects.all()
+
+    return render(
+        request,
+        "admin/pages/photo_album.html",
+        {
+            "albums": albums
+        }
+    )
+
+
+def photo_album_add(request):
+
+    if request.method == "POST":
+
+        title = request.POST.get("title")
+        cover_image = request.FILES.get("cover_image")
+        order = request.POST.get("order") or 0
+
+        if not title or not cover_image:
+
+            messages.error(
+                request,
+                "Title and Cover Image are required."
+            )
+
+            return redirect(
+                "dashboard:photo_album_add"
+            )
+
+        PhotoAlbum.objects.create(
+            title=title,
+            cover_image=cover_image,
+            order=order
+        )
+
+        messages.success(
+            request,
+            "Photo Album Added Successfully."
+        )
+
+        return redirect(
+            "dashboard:photo_album"
+        )
+
+    return render(
+        request,
+        "admin/pages/album_form.html",
+        {
+            "album": None,
+            "page_title": "Add Photo Album"
+        }
+    )
+
+
+def photo_album_update(request, slug):
+
+    album = get_object_or_404(
+        PhotoAlbum,
+        slug=slug
+    )
+
+    if request.method == "POST":
+
+        album.title = request.POST.get("title")
+        album.order = request.POST.get("order") or 0
+
+        if request.FILES.get("cover_image"):
+
+            album.cover_image = request.FILES.get(
+                "cover_image"
+            )
+
+        album.slug = ""
+        album.save()
+
+        messages.success(
+            request,
+            "Photo Album Updated Successfully."
+        )
+
+        return redirect(
+            "dashboard:photo_album"
+        )
+
+    return render(
+        request,
+        "admin/pages/album_form.html",
+        {
+            "album": album,
+            "page_title": "Update Photo Album"
+        }
+    )
+
+
+def photo_album_delete(request, slug):
+
+    album = get_object_or_404(
+        PhotoAlbum,
+        slug=slug
+    )
+
+    album.delete()
+
+    messages.success(
+        request,
+        "Photo Album Deleted Successfully."
+    )
+
+    return redirect(
+        "dashboard:photo_album"
+    )
+
+
+# =========================
+# PHOTO GALLERY
+# =========================
+
+def photo_gallery(request, slug):
+    """Display photos in an album"""
+    album = get_object_or_404(PhotoAlbum, slug=slug)
+    photos = album.photos.all()
+    
+    context = {
+        'album': album,
+        'photos': photos,
+    }
+    
+    return render(request, "admin/pages/photo_gallery.html", context)
+
+
+
+from django.db.models import Max
+
+def photo_gallery_add(request, slug):
+
+    album = get_object_or_404(PhotoAlbum, slug=slug)
+
+    if request.method == "POST":
+
+        images = request.FILES.getlist("images")
+
+        if not images:
+            messages.error(request, "Please select at least one image.")
+            return redirect("dashboard:photo_gallery", slug=album.slug)
+
+        last_order = PhotoGallery.objects.filter(
+            album=album
+        ).aggregate(
+            Max("order")
+        )["order__max"] or 0
+
+        success_count = 0
+
+        for i, image in enumerate(images):
+
+            PhotoGallery.objects.create(
+                album=album,
+                image=image,
+                order=last_order + i + 1
+            )
+
+            success_count += 1
+
+        messages.success(
+            request,
+            f'{success_count} photo{"s" if success_count > 1 else ""} added successfully!'
+        )
+
+        return redirect(
+            "dashboard:photo_gallery",
+            slug=album.slug
+        )
+
+    photos = album.photos.all()
+
+    return render(
+        request,
+        "admin/pages/gallery_form.html",
+        {
+            "album": album,
+            "photos": photos,
+        }
+    )
+
+
+def photo_gallery_update(request, slug):
+    """Update a photo's details"""
+    photo = get_object_or_404(PhotoGallery, sluh=slug)
+    album = photo.album
+    
+    if request.method == "POST":
+        title = request.POST.get("title", "").strip()
+        new_image = request.FILES.get("image")
+        order = request.POST.get("order")
+        
+        if title:
+            photo.title = title
+        
+        if new_image:
+            # Delete old image
+            if photo.image:
+                photo.image.delete(save=False)
+            photo.image = new_image
+        
+        if order:
+            try:
+                photo.order = int(order)
+            except ValueError:
+                pass
+        
+        photo.save()
+        messages.success(request, "Photo updated successfully!")
+        return redirect('dashboard:photo_gallery', slug=album.slug)
+    
+    context = {
+        'photo': photo,
+        'album': album,
+    }
+    
+    return render(request, "admin/pages/photo_update.html", context)
+
+
+def photo_gallery_delete(request, slug):
+
+    photo = get_object_or_404(
+        PhotoGallery,
+        slug=slug
+    )
+
+    album = photo.album
+
+    if photo.image:
+        photo.image.delete(save=False)
+
+    photo.delete()
+
+    messages.success(
+        request,
+        "Photo deleted successfully!"
+    )
+
+    return redirect(
+        "dashboard:photo_gallery",
+        slug=album.slug
+    )
+
+# =========================
+# VIDEO GALLERY
+# =========================
+
+def video_gallery(request):
+
+    return render(
+        request,
+        "admin/pages/video_gallery.html"
     )

@@ -1,0 +1,266 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% load custom_filters %}
+{% block title %}
+Live Gold Rate
+{% endblock %}
+
+{% block page_css %}
+<style>
+
+.price-page{
+    padding:40px 4%;
+    margin: 8px;
+    font-family:Arial,sans-serif;
+}
+
+.price-card{
+    max-width:1150px;
+    margin:auto;
+    border-radius:10px;
+}
+
+.price-title{
+    text-align:center;
+    margin-bottom:15px;
+}
+
+.price-title h2{
+    font-size:30px;
+    margin:0;
+    font-weight:800;
+    color:#111;
+}
+
+.price-title p{
+    margin-top:8px;
+    font-size:15px;
+    color:#555;
+    font-weight:600;
+}
+
+.price-toggle{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.price-toggle button{
+    border:none;
+    padding:10px 18px;
+    border-radius:6px;
+    font-weight:700;
+    cursor:pointer;
+    background:#f1f1f1;
+    color:#111;
+}
+
+.price-toggle button.active{
+    background:#0d6efd;
+    color:#fff;
+}
+
+.price-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-bottom:20px;
+}
+
+.price-table th{
+    background:#f3f3f3;
+    color:#111;
+    padding:14px 10px;
+    border:1px solid #ddd;
+    font-size:17px;
+    font-weight:800;
+    text-align:center;
+}
+
+.price-table td{
+    padding:14px 30px;
+    border:1px solid #ddd;
+    font-size:17px;
+    color:#222;
+    
+}
+
+.price-table td:nth-child(2),
+.price-table td:nth-child(3){
+    text-align:center;
+    font-weight:700;
+}
+
+.price-table td:first-child{
+    font-weight:700;
+}
+
+.section-heading{
+    text-align:center;
+    margin:20px 0 12px;
+    font-size:24px;
+    font-weight:800;
+    color:#111;
+}
+
+.price-note{
+    margin-top:20px;
+    padding:15px;
+    background:#fff6d9;
+    border:1px solid #f0c14b;
+    border-radius:6px;
+    text-align:center;
+    font-size:14px;
+    line-height:1.8;
+    color:#444;
+    font-weight:600;
+}
+
+@media(max-width:768px){
+
+    .price-page{
+        padding:20px 10px;
+    }
+
+    .price-title h2{
+        font-size:22px;
+    }
+
+    .price-table th,
+    .price-table td{
+        font-size:13px;
+        padding:10px 6px;
+    }
+
+    .section-heading{
+        font-size:20px;
+    }
+
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cart_border">
+
+<div class="price-page">
+
+    <div class="price-card">
+
+        <!-- TITLE -->
+        <div class="price-title">
+
+            <h2>
+                আজকের সোনার দাম বাংলাদেশ
+            </h2>
+
+            <p>
+                Live Gold & Silver Price Update
+            </p>
+
+        </div>
+
+        <!-- GOLD TABLE -->
+        <table class="price-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        প্রোডাক্ট
+                    </th>
+
+                    <th>
+                        সোনার দাম (প্রতি গ্রাম)
+                    </th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for item in gold_prices %}
+
+                <tr>
+
+                    <td>
+                        {{ item.name }}
+                    </td>
+
+                    <td>
+                        ৳ {{ item.price|bn_price  }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        <!-- SILVER TITLE -->
+        <div class="section-heading">
+
+            আজকের রুপার দাম
+
+        </div>
+
+        <!-- SILVER TABLE -->
+        <table class="price-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        প্রোডাক্ট
+                    </th>
+
+                    <th>
+                        রুপার দাম (প্রতি গ্রাম)
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for item in silver_prices %}
+
+                <tr>
+
+                    <td>
+                        {{ item.name }}
+                    </td>
+
+                    <td>
+                        ৳ {{ item.price|bn_price  }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        <!-- NOTE -->
+        <div class="price-note">
+
+            বিঃদ্রঃ বিক্রয় মূল্য বাংলাদেশ জুয়েলার্স সমিতি (বাজুস) এর নিয়ম অনুযায়ী আনুমানিক হিসাব করা হয়েছে।
+            <br>
+            ডলারের মূল্য এবং আন্তর্জাতিক বাজার অনুযায়ী দাম পরিবর্তন হতে পারে।
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+{% endblock %}

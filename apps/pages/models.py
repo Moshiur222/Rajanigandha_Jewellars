@@ -148,6 +148,8 @@ class Product(models.Model):
     category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,
+        null=True,
+        blank=True,
         related_name="products"
     )
 
@@ -509,3 +511,399 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.email
+    
+
+
+
+class Vision(models.Model):
+
+    title = models.CharField(max_length=50)
+
+    image = models.ImageField(
+        upload_to="media/",
+        null=True,
+        blank=True
+    )
+
+    descriptions = models.TextField(
+        null=True,
+        blank=True
+    )
+
+    def save(self, *args, **kwargs):
+
+        if self.image:
+
+            img = Image.open(self.image)
+
+            # RGBA FIX
+            if img.mode in ("RGBA", "P"):
+                img = img.convert("RGB")
+
+            output = BytesIO()
+
+            quality = 95
+
+            # KEEP ORIGINAL RESOLUTION
+            width, height = img.size
+
+            while quality >= 20:
+
+                output.seek(0)
+                output.truncate()
+
+                img.save(
+                    output,
+                    format="WEBP",
+                    quality=quality,
+                    method=6
+                )
+
+                size_kb = output.tell() / 1024
+
+                if size_kb <= 30:
+                    break
+
+                quality -= 5
+
+            output.seek(0)
+
+            file_name = (
+                self.image.name.split(".")[0]
+                + ".webp"
+            )
+
+            self.image = ContentFile(
+                output.read(),
+                name=file_name
+            )
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title
+
+
+class Mission(models.Model):
+
+    title = models.CharField(max_length=50)
+
+    image = models.ImageField(
+        upload_to="media/",
+        null=True,
+        blank=True
+    )
+
+    descriptions = models.TextField(
+        null=True,
+        blank=True
+    )
+
+    def save(self, *args, **kwargs):
+
+        if self.image:
+
+            img = Image.open(self.image)
+
+            if img.mode in ("RGBA", "P"):
+                img = img.convert("RGB")
+
+            output = BytesIO()
+
+            quality = 95
+
+            while quality >= 20:
+
+                output.seek(0)
+                output.truncate()
+
+                img.save(
+                    output,
+                    format="WEBP",
+                    quality=quality,
+                    method=6
+                )
+
+                size_kb = output.tell() / 1024
+
+                if size_kb <= 30:
+                    break
+
+                quality -= 5
+
+            output.seek(0)
+
+            file_name = (
+                self.image.name.split(".")[0]
+                + ".webp"
+            )
+
+            self.image = ContentFile(
+                output.read(),
+                name=file_name
+            )
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title
+    
+
+
+# =========================
+# ALBUM
+# =========================
+from django.db import models
+from django.utils.text import slugify
+
+class PhotoAlbum(models.Model):
+    title = models.CharField(max_length=120)
+
+    cover_image = models.ImageField(upload_to="albums/")
+
+    slug = models.SlugField(unique=True, blank=True)
+
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "-id"]
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.title)
+            slug = base_slug
+            counter = 1
+
+            while PhotoAlbum.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+
+            self.slug = slug
+
+        if self.cover_image:
+            self.cover_image = optimize_image(self.cover_image)
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title
+
+
+# =========================
+# GALLERY
+# =========================
+
+from django.db import models
+from django.utils.text import slugify
+
+
+class PhotoGallery(models.Model):
+
+    album = models.ForeignKey(
+        PhotoAlbum,
+        on_delete=models.CASCADE,
+        related_name="photos"
+    )
+
+    title = models.CharField(
+        max_length=120,
+        blank=True,
+        null=True
+    )
+
+    slug = models.SlugField(
+        unique=True,
+        blank=True
+    )
+
+    image = models.ImageField(
+        upload_to="gallery/"
+    )
+
+    order = models.PositiveIntegerField(
+        default=0
+    )
+
+    class Meta:
+        ordering = ["order", "-id"]
+
+    def save(self, *args, **kwargs):
+
+        if not self.slug:
+
+            if self.title:
+                base_slug = slugify(self.title)
+            else:
+                base_slug = slugify(self.album.title)
+
+            slug = base_slug
+            counter = 1
+
+            while PhotoGallery.objects.filter(
+                slug=slug
+            ).exclude(
+                pk=self.pk
+            ).exists():
+
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+
+            self.slug = slug
+
+        if self.image:
+
+            self.image = optimize_image(
+                self.image
+            )
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title or self.album.title
+
+
+# =========================
+# IMAGE OPTIMIZER
+# =========================
+
+def optimize_image(image_field):
+
+    img = Image.open(image_field)
+
+    # RGBA FIX
+    if img.mode in ("RGBA", "P"):
+        img = img.convert("RGB")
+
+    # KEEP ORIGINAL SIZE
+    width, height = img.size
+
+    output = BytesIO()
+
+    quality = 95
+
+    while quality >= 20:
+
+        output.seek(0)
+        output.truncate()
+
+        img.save(
+            output,
+            format="WEBP",
+            quality=quality,
+            method=6,
+            optimize=True
+        )
+
+        size_kb = output.tell() / 1024
+
+        if size_kb <= 50:
+            break
+
+        quality -= 5
+
+    output.seek(0)
+
+    file_name = (
+        image_field.name.split(".")[0]
+        + ".webp"
+    )
+
+    return ContentFile(
+        output.read(),
+        name=file_name
+    )
+
+
+from urllib.parse import urlparse, parse_qs
+
+
+class VideoGallery(models.Model):
+    """Model for storing YouTube video references"""
+    
+    title = models.CharField(max_length=200)
+    youtube_url = models.URLField(max_length=500, unique=True)
+    youtube_id = models.CharField(max_length=20, blank=True, editable=False)
+    order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ["order", "-created_at"]
+        verbose_name = "Video"
+        verbose_name_plural = "Videos"
+    
+    def save(self, *args, **kwargs):
+        # Extract YouTube video ID from URL
+        self.youtube_id = self.extract_youtube_id()
+        
+        # Auto-set order if not specified
+        if not self.order:
+            last_order = VideoGallery.objects.aggregate(
+                models.Max('order')
+            )['order__max']
+            self.order = (last_order or 0) + 1
+        
+        super().save(*args, **kwargs)
+    
+    def extract_youtube_id(self):
+        """Extract YouTube video ID from various URL formats"""
+        if not self.youtube_url:
+            return ''
+        
+        url = self.youtube_url.strip()
+        
+        # Pattern 1: https://www.youtube.com/watch?v=VIDEO_ID
+        # Pattern 2: https://youtu.be/VIDEO_ID
+        # Pattern 3: https://www.youtube.com/embed/VIDEO_ID
+        # Pattern 4: https://www.youtube.com/v/VIDEO_ID
+        # Pattern 5: https://www.youtube.com/shorts/VIDEO_ID
+        
+        patterns = [
+            r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})',
+            r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})',
+            r'(?:https?:\/\/)?youtu\.be\/([a-zA-Z0-9_-]{11})',
+            r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([a-zA-Z0-9_-]{11})',
+            r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})',
+        ]
+        
+        for pattern in patterns:
+            match = re.search(pattern, url)
+            if match:
+                return match.group(1)
+        
+        # Try to parse as query parameter
+        try:
+            parsed = urlparse(url)
+            if 'youtube.com' in parsed.netloc:
+                params = parse_qs(parsed.query)
+                if 'v' in params:
+                    return params['v'][0]
+        except:
+            pass
+        
+        return ''
+    
+    @property
+    def youtube_embed_url(self):
+        """Generate embed URL for iframe"""
+        if self.youtube_id:
+            return f"https://www.youtube.com/embed/{self.youtube_id}"
+        return ''
+    
+    @property
+    def youtube_thumbnail_url(self):
+        """Generate thumbnail URL"""
+        if self.youtube_id:
+            return f"https://img.youtube.com/vi/{self.youtube_id}/hqdefault.jpg"
+        return ''
+    
+    @property
+    def youtube_watch_url(self):
+        """Generate watch URL"""
+        if self.youtube_id:
+            return f"https://www.youtube.com/watch?v={self.youtube_id}"
+        return self.youtube_url
+    
+    def __str__(self):
+        return self.title

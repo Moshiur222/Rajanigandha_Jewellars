@@ -1,0 +1,119 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Photo Album{% endblock %}
+
+{% block page_css %}
+<style>
+.album-page{
+    padding:40px 4%;
+}
+
+.album-title{
+    text-align:center;
+    margin-bottom:35px;
+}
+
+.album-title h1{
+    font-size:42px;
+    color:#111;
+    font-family:'Playfair Display',serif;
+}
+
+.album-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:28px;
+}
+
+.album-card{
+    background:#fff;
+    border:1px solid #eee;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,.06);
+    text-decoration:none;
+    transition:.3s;
+}
+
+.album-card:hover{
+    transform:translateY(-6px);
+}
+
+.album-card img{
+    width:100%;
+    height:260px;
+    object-fit:cover;
+    display:block;
+}
+
+.album-info{
+    padding:18px;
+    text-align:center;
+}
+
+.album-info h3{
+    color:#111;
+    font-size:20px;
+    margin:0;
+}
+
+.album-info p{
+    margin-top:6px;
+    color:#777;
+}
+
+@media(max-width:992px){
+    .album-grid{
+        grid-template-columns:repeat(2, 1fr);
+    }
+}
+
+@media(max-width:576px){
+    .album-grid{
+        grid-template-columns:1fr;
+    }
+
+    .album-title h1{
+        font-size:32px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cart_border">
+
+<section class="album-page">
+
+    <div class="album-title">
+        <h1>Photo Album</h1>
+    </div>
+
+    <div class="album-grid">
+
+        {% for album in albums %}
+
+        <a href="{% url 'pages:photo_gallery' album.slug %}" class="album-card">
+
+            <img src="{{ album.cover_image.url }}" alt="{{ album.title }}">
+
+            <div class="album-info">
+                <h3>{{ album.title }}</h3>
+                <p>{{ album.photos.count }} Photos</p>
+            </div>
+
+        </a>
+
+        {% empty %}
+
+        <h2>No Album Found</h2>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+</div>
+{% endblock %}

@@ -692,13 +692,6 @@ textarea.form-control {
     display: inline-block;
 }
 
-.dropdown-toggle::after {
-    content: '\f107';
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
-    margin-left: 6px;
-}
-
 .dropdown-menu {
     position: absolute;
     top: 100%;

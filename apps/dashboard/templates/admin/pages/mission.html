@@ -1,0 +1,778 @@
+{% extends "admin/base/base.html" %}
+{% load static %}
+
+{% block admin_css %}
+<style>
+    /* Mission Form Specific Styles */
+    .mission-form-container {
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        gap: 24px;
+    }
+
+    .mission-form-wrapper {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .mission-form-wrapper .card-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border-color);
+        background: linear-gradient(to right, var(--white), var(--light-1));
+    }
+
+    .mission-form-wrapper .card-header h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .mission-form-wrapper .card-header h3 i {
+        color: var(--primary);
+        font-size: 20px;
+    }
+
+    .mission-form-wrapper .card-body {
+        padding: 32px;
+    }
+
+    /* Form Section */
+    .form-section {
+        margin-bottom: 32px;
+    }
+
+    .form-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .form-section-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid var(--light-2);
+    }
+
+    /* Form Group Enhancements */
+    .form-group {
+        margin-bottom: 24px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+    }
+
+    .form-group .required:after {
+        content: '*';
+        color: var(--danger);
+        margin-left: 4px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 14px;
+        color: var(--text-primary);
+        background: var(--white);
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius);
+        transition: var(--transition);
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        background: var(--white);
+    }
+
+    .form-control::placeholder {
+        color: var(--text-muted);
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 150px;
+        line-height: 1.6;
+    }
+
+    /* File Upload Enhancement */
+    .file-upload-wrapper {
+        position: relative;
+    }
+
+    .file-upload-area {
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius);
+        padding: 24px;
+        text-align: center;
+        background: var(--light-1);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .file-upload-area:hover {
+        border-color: var(--primary);
+        background: rgba(99, 102, 241, 0.05);
+    }
+
+    .file-upload-area.has-file {
+        border-color: var(--success);
+        background: rgba(16, 185, 129, 0.05);
+    }
+
+    .file-upload-icon {
+        font-size: 48px;
+        color: var(--text-muted);
+        margin-bottom: 12px;
+    }
+
+    .file-upload-text {
+        font-size: 14px;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    .file-upload-subtext {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 4px;
+    }
+
+    .file-upload-input {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        cursor: pointer;
+    }
+
+    /* Image Preview */
+    .image-preview-container {
+        margin-top: 16px;
+        position: relative;
+        display: inline-block;
+    }
+
+    .image-preview {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        border-radius: var(--radius);
+        border: 3px solid var(--border-color);
+        box-shadow: var(--shadow);
+    }
+
+    .image-preview-remove {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        width: 30px;
+        height: 30px;
+        background: var(--danger);
+        color: var(--white);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 14px;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+    }
+
+    .image-preview-remove:hover {
+        background: var(--danger-dark);
+        transform: scale(1.1);
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border-color);
+        margin-top: 32px;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: var(--radius);
+        transition: var(--transition);
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn i {
+        font-size: 16px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        color: var(--white);
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-secondary {
+        background: var(--light-1);
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+        background: var(--light-2);
+        color: var(--text-primary);
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, var(--danger), #f87171);
+        color: var(--white);
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    }
+
+    /* Info Card */
+    .mission-info-card {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        height: fit-content;
+    }
+
+    .mission-info-card .card-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border-color);
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    }
+
+    .mission-info-card .card-header h4 {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .mission-info-card .card-body {
+        padding: 24px;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .info-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .info-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+
+    .info-icon.bg-primary-light {
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--primary);
+    }
+
+    .info-icon.bg-success-light {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success);
+    }
+
+    .info-icon.bg-warning-light {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning);
+    }
+
+    .info-content h5 {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+
+    .info-content p {
+        font-size: 13px;
+        color: var(--text-secondary);
+        line-height: 1.5;
+    }
+
+    /* Character Count */
+    .char-count {
+        display: flex;
+        justify-content: flex-end;
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 6px;
+    }
+
+    .char-count.warning {
+        color: var(--warning);
+    }
+
+    .char-count.danger {
+        color: var(--danger);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .mission-form-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .mission-info-card {
+            order: -1;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .mission-form-wrapper .card-body {
+            padding: 20px;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+        }
+        
+        .form-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block admin_main %}
+<div class="page-content">
+
+    <!-- Page Title -->
+    <div class="page-title">
+        <div>
+            <h1>Our Mission</h1>
+            <div class="breadcrumb">
+                <div class="breadcrumb-item">
+                    <a href="">
+                        <i class="fas fa-home"></i>
+                    </a>
+                </div>
+                <div class="breadcrumb-item">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                <div class="breadcrumb-item">
+                    <a href="">Missions</a>
+                </div>
+                <div class="breadcrumb-item">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                <div class="breadcrumb-item active">
+                    {% if mission %}Edit Mission{% else %}Add New Mission{% endif %}
+                </div>
+            </div>
+        </div>
+        <div>
+            <a href="" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Back to List
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="mission-form-container">
+
+        <!-- Form -->
+        <div class="mission-form-wrapper">
+            <div class="card-header">
+                <h3>
+                    <i class="fas fa-{% if mission %}edit{% else %}plus-circle{% endif %}"></i>
+                    {% if mission %}Update Mission Details{% else %}Create New Mission{% endif %}
+                </h3>
+            </div>
+
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data" id="missionForm">
+                    {% csrf_token %}
+
+                    <!-- Basic Information Section -->
+                    <div class="form-section">
+                        <h4 class="form-section-title">Basic Information</h4>
+
+                        <div class="form-group">
+                            <label class="required">Mission Title</label>
+                            <input
+                                type="text"
+                                name="title"
+                                class="form-control"
+                                placeholder="Enter mission title"
+                                value="{{ mission.title|default:'' }}"
+                                required
+                                maxlength="200"
+                                id="titleInput"
+                            >
+                            <div class="char-count" id="titleCount">0/200</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Mission Description</label>
+                            <textarea
+                                name="descriptions"
+                                class="form-control"
+                                rows="8"
+                                placeholder="Describe your mission in detail..."
+                                required
+                                maxlength="5000"
+                                id="descriptionInput"
+                            >{{ mission.descriptions|default:'' }}</textarea>
+                            <div class="char-count" id="descriptionCount">0/5000</div>
+                        </div>
+                    </div>
+
+                    <!-- Media Section -->
+                    <div class="form-section">
+                        <h4 class="form-section-title">Media</h4>
+
+                        <div class="form-group">
+                            <label>Mission Image</label>
+                            
+                            {% if mission.image %}
+                            <div class="image-preview-container" id="imagePreviewContainer">
+                                <img src="{{ mission.image.url }}" class="image-preview" alt="Mission Image">
+                                <button type="button" class="image-preview-remove" id="removeImage" title="Remove Image">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            {% endif %}
+
+                            <div class="file-upload-area {% if mission.image %}has-file{% endif %}" id="fileUploadArea">
+                                <div class="file-upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <div class="file-upload-text">
+                                    {% if mission.image %}
+                                        Click to change image
+                                    {% else %}
+                                        Drag & drop your image here or click to browse
+                                    {% endif %}
+                                </div>
+                                <div class="file-upload-subtext">
+                                    Supported formats: JPG, PNG, GIF (Max size: 5MB)
+                                </div>
+                                <input
+                                    type="file"
+                                    name="image"
+                                    class="file-upload-input"
+                                    accept="image/*"
+                                    id="imageInput"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-{% if mission %}check{% else %}save{% endif %}"></i>
+                            {% if mission %}Update Mission{% else %}Save Mission{% endif %}
+                        </button>
+
+                        {% if mission %}
+                        <button type="button" class="btn btn-danger" id="deleteMission">
+                            <i class="fas fa-trash-alt"></i>
+                            Delete Mission
+                        </button>
+                        {% endif %}
+
+                        <a href="" class="btn btn-secondary">
+                            <i class="fas fa-times"></i>
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Info Card -->
+        <div class="mission-info-card">
+            <div class="card-header">
+                <h4>
+                    <i class="fas fa-info-circle"></i>
+                    Guidelines
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="info-item">
+                    <div class="info-icon bg-primary-light">
+                        <i class="fas fa-heading"></i>
+                    </div>
+                    <div class="info-content">
+                        <h5>Clear Title</h5>
+                        <p>Keep your mission title concise and descriptive. It should clearly communicate the purpose of the mission.</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon bg-success-light">
+                        <i class="fas fa-align-left"></i>
+                    </div>
+                    <div class="info-content">
+                        <h5>Detailed Description</h5>
+                        <p>Provide comprehensive details about the mission's objectives, target audience, and expected outcomes.</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon bg-warning-light">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <div class="info-content">
+                        <h5>Quality Image</h5>
+                        <p>Upload a high-quality, relevant image that represents your mission. Optimal size: 1200x800 pixels.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block admin_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Character count for title
+        const titleInput = document.getElementById('titleInput');
+        const titleCount = document.getElementById('titleCount');
+        
+        if (titleInput && titleCount) {
+            updateCharCount(titleInput, titleCount, 200);
+            titleInput.addEventListener('input', function() {
+                updateCharCount(this, titleCount, 200);
+            });
+        }
+
+        // Character count for description
+        const descriptionInput = document.getElementById('descriptionInput');
+        const descriptionCount = document.getElementById('descriptionCount');
+        
+        if (descriptionInput && descriptionCount) {
+            updateCharCount(descriptionInput, descriptionCount, 5000);
+            descriptionInput.addEventListener('input', function() {
+                updateCharCount(this, descriptionCount, 5000);
+            });
+        }
+
+        function updateCharCount(input, counter, max) {
+            const current = input.value.length;
+            counter.textContent = `${current}/${max}`;
+            
+            counter.classList.remove('warning', 'danger');
+            
+            if (current >= max * 0.9) {
+                counter.classList.add('danger');
+            } else if (current >= max * 0.7) {
+                counter.classList.add('warning');
+            }
+        }
+
+        // File upload preview
+        const imageInput = document.getElementById('imageInput');
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+
+        if (imageInput && fileUploadArea) {
+            fileUploadArea.addEventListener('click', function() {
+                imageInput.click();
+            });
+
+            imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Validate file type
+                    if (!file.type.startsWith('image/')) {
+                        alert('Please select an image file.');
+                        this.value = '';
+                        return;
+                    }
+
+                    // Validate file size (5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('File size must be less than 5MB.');
+                        this.value = '';
+                        return;
+                    }
+
+                    fileUploadArea.classList.add('has-file');
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        if (imagePreviewContainer) {
+                            const img = imagePreviewContainer.querySelector('img');
+                            if (img) {
+                                img.src = e.target.result;
+                            } else {
+                                const newPreview = document.createElement('div');
+                                newPreview.id = 'imagePreviewContainer';
+                                newPreview.className = 'image-preview-container';
+                                newPreview.innerHTML = `
+                                    <img src="${e.target.result}" class="image-preview" alt="Preview">
+                                    <button type="button" class="image-preview-remove" id="removeImage" title="Remove Image">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                `;
+                                fileUploadArea.parentNode.insertBefore(newPreview, fileUploadArea);
+                                
+                                // Add event listener to new remove button
+                                const newRemoveBtn = newPreview.querySelector('#removeImage');
+                                if (newRemoveBtn) {
+                                    newRemoveBtn.addEventListener('click', removeImage);
+                                }
+                            }
+                        } else {
+                            // Create new preview container
+                            const previewDiv = document.createElement('div');
+                            previewDiv.id = 'imagePreviewContainer';
+                            previewDiv.className = 'image-preview-container';
+                            previewDiv.innerHTML = `
+                                <img src="${e.target.result}" class="image-preview" alt="Preview">
+                                <button type="button" class="image-preview-remove" id="removeImage" title="Remove Image">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            `;
+                            fileUploadArea.parentNode.insertBefore(previewDiv, fileUploadArea);
+                            
+                            // Add event listener to new remove button
+                            const newRemoveBtn = previewDiv.querySelector('#removeImage');
+                            if (newRemoveBtn) {
+                                newRemoveBtn.addEventListener('click', removeImage);
+                            }
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Drag and drop
+            fileUploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.borderColor = 'var(--primary)';
+                this.style.background = 'rgba(99, 102, 241, 0.05)';
+            });
+
+            fileUploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.style.borderColor = 'var(--border-color)';
+                this.style.background = 'var(--light-1)';
+            });
+
+            fileUploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.borderColor = 'var(--border-color)';
+                this.style.background = 'var(--light-1)';
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    imageInput.files = files;
+                    imageInput.dispatchEvent(new Event('change'));
+                }
+            });
+        }
+
+        // Remove image
+        function removeImage() {
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            const fileInput = document.getElementById('imageInput');
+            
+            if (previewContainer) {
+                previewContainer.remove();
+            }
+            
+            if (fileInput) {
+                fileInput.value = '';
+            }
+            
+            if (fileUploadArea) {
+                fileUploadArea.classList.remove('has-file');
+            }
+        }
+
+        const removeImageBtn = document.getElementById('removeImage');
+        if (removeImageBtn) {
+            removeImageBtn.addEventListener('click', removeImage);
+        }
+
+        // Delete mission confirmation
+        const deleteBtn = document.getElementById('deleteMission');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function() {
+                if (confirm('Are you sure you want to delete this mission? This action cannot be undone.')) {
+                    // Submit delete form or redirect to delete URL
+                    window.location.href = "{% if mission %}{% url 'admin:mission_delete' mission.id %}{% endif %}";
+                }
+            });
+        }
+
+        // Form validation
+        const missionForm = document.getElementById('missionForm');
+        if (missionForm) {
+            missionForm.addEventListener('submit', function(e) {
+                const title = this.querySelector('[name="title"]');
+                const description = this.querySelector('[name="descriptions"]');
+                
+                if (title && !title.value.trim()) {
+                    e.preventDefault();
+                    alert('Please enter a mission title.');
+                    title.focus();
+                    return;
+                }
+                
+                if (description && !description.value.trim()) {
+                    e.preventDefault();
+                    alert('Please enter a mission description.');
+                    description.focus();
+                    return;
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
