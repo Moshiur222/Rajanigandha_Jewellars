@@ -3,6 +3,7 @@ asgiref==3.11.1
 certifi==2026.4.22
 charset-normalizer==3.4.7
 Django==6.0.5
+django-apscheduler==0.7.0
 idna==3.15
 pillow==12.2.0
 requests==2.34.0
