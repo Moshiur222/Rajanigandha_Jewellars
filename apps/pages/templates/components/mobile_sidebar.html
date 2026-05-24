@@ -35,19 +35,34 @@
             <div class="mobile-dropdown-content">
 
                 <a href="{% url 'pages:our_mision' %}">
-                    Our Mission
+                    Mission
                 </a>
 
                 <a href="{% url 'pages:our_vision' %}">
-                    Our Vision
+                    Vision
                 </a>
 
+            </div>
+
+        </div>
+        <div class="mobile-dropdown">
+
+            <button class="mobile-dropdown-btn" type="button">
+                <span>
+                    <i class="fa-solid fa-building"></i>
+                    Our Gallery
+                </span>
+                <i class="fa-solid fa-angle-down"></i>
+            </button>
+
+            <div class="mobile-dropdown-content">
+
                 <a href="{% url 'pages:photo_album' %}">
-                    Our Photo Gallery
+                    Photo Gallery
                 </a>
 
                 <a href="{% url 'pages:video_gallery' %}">
-                    Our Video Gallery
+                   Video Gallery
                 </a>
 
             </div>
@@ -69,7 +84,7 @@
 
                 {% for menue in menues %}
                 <div class="mobile-submenu">
-
+                    {% if menue.categories.all %}
                     <button class="mobile-submenu-btn" type="button">
                         <span>{{ menue.get_name_display }}</span>
 
@@ -77,7 +92,15 @@
                             <i class="fa-solid fa-angle-down"></i>
                         {% endif %}
                     </button>
+                    {% else %}
+                    <a href= " {% url 'pages:menue_products' menue.slug %}" class="mobile-submenu-btn" type="button">
+                        <span>{{ menue.get_name_display }}</span>
 
+                        {% if menue.categories.all %}
+                            <i class="fa-solid fa-angle-down"></i>
+                        {% endif %}
+                    </a>
+                    {% endif %}
                     {% if menue.categories.all %}
                     <div class="mobile-submenu-content">
 

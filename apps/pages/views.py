@@ -264,8 +264,6 @@ def settings_view(request):
 
 
 def home(request):
-    if request.user.is_authenticated and request.user.user_type == 1:
-        return redirect("dashboard:home")
 
     categories = Category.objects.all().order_by("order")
     sub_categories = SubCategory.objects.all().order_by("order")
@@ -308,8 +306,8 @@ def get_filter_base_context():
         max_product_price = Decimal("200000")
 
     return {
-        "menues": Menue.objects.all().order_by("order"),
-        "categories": Category.objects.select_related("menue").all().order_by("order"),
+        "menues": Menue.objects.filter(is_visible=True).order_by("order"),
+        "categories": Category.objects.select_related("menue").filter(is_visible=True).order_by("order"),
         "sub_categories": SubCategory.objects.all().order_by("order"),
         "max_product_price": int(max_product_price),
     }
@@ -325,6 +323,12 @@ def apply_product_filter(request, products):
     search = request.GET.get("search", "")
 
     base_context = get_filter_base_context()
+
+    if selected_category:
+        category_obj = Category.objects.filter(id=selected_category).first()
+
+        if category_obj:
+            selected_menue = str(category_obj.menue_id)
 
     if not max_price:
         max_price = base_context["max_product_price"]
@@ -355,48 +359,48 @@ def apply_product_filter(request, products):
             Q(sku__icontains=search)
         )
 
-    products = list(products)
+    product_list = list(products)
 
     if max_price:
         try:
             max_price_decimal = Decimal(str(max_price))
 
-            products = [
-                product for product in products
+            product_list = [
+                product for product in product_list
                 if product.final_price <= max_price_decimal
             ]
 
-        except:
+        except Exception:
             pass
 
     if selected_sort == "price_low":
-        products = sorted(
-            products,
+        product_list = sorted(
+            product_list,
             key=lambda product: product.final_price or 0
         )
 
     elif selected_sort == "price_high":
-        products = sorted(
-            products,
+        product_list = sorted(
+            product_list,
             key=lambda product: product.final_price or 0,
             reverse=True
         )
 
     elif selected_sort == "popular":
-        products = sorted(
-            products,
+        product_list = sorted(
+            product_list,
             key=lambda product: product.id,
             reverse=True
         )
 
     else:
-        products = sorted(
-            products,
+        product_list = sorted(
+            product_list,
             key=lambda product: product.id,
             reverse=True
         )
 
-    return products, {
+    return product_list, {
         **base_context,
         "selected_sort": selected_sort,
         "selected_menue": selected_menue,
@@ -405,7 +409,7 @@ def apply_product_filter(request, products):
         "selected_availability": selected_availability,
         "max_price": int(max_price),
         "search": search,
-        "product_count": len(products),
+        "product_count": len(product_list),
     }
 
 
@@ -829,6 +833,8 @@ def our_mision(request):
         "mission" : mission,
     }
     return render(request, "pages/mision.html", context)
+from datetime import datetime
+
 
 def live_rate(request):
 
@@ -836,6 +842,52 @@ def live_rate(request):
 
     gold_prices = []
     silver_prices = []
+
+    # =========================
+    # BANGLA DATE
+    # =========================
+
+    months_bn = {
+        "January": "জানুয়ারি",
+        "February": "ফেব্রুয়ারি",
+        "March": "মার্চ",
+        "April": "এপ্রিল",
+        "May": "মে",
+        "June": "জুন",
+        "July": "জুলাই",
+        "August": "আগস্ট",
+        "September": "সেপ্টেম্বর",
+        "October": "অক্টোবর",
+        "November": "নভেম্বর",
+        "December": "ডিসেম্বর",
+    }
+
+    days_bn = {
+        "Saturday": "শনিবার",
+        "Sunday": "রবিবার",
+        "Monday": "সোমবার",
+        "Tuesday": "মঙ্গলবার",
+        "Wednesday": "বুধবার",
+        "Thursday": "বৃহস্পতিবার",
+        "Friday": "শুক্রবার",
+    }
+
+    numbers_bn = str.maketrans(
+        "0123456789",
+        "০১২৩৪৫৬৭৮৯"
+    )
+
+    now = datetime.now()
+
+    today_bn = (
+        days_bn[now.strftime("%A")]
+        + ", "
+        + now.strftime("%d").translate(numbers_bn)
+        + " "
+        + months_bn[now.strftime("%B")]
+        + " "
+        + now.strftime("%Y").translate(numbers_bn)
+    )
 
     try:
         response = requests.get(url, timeout=20)
@@ -879,8 +931,8 @@ def live_rate(request):
     return render(request, "pages/live_rate.html", {
         "gold_prices": gold_prices,
         "silver_prices": silver_prices,
+        "today_bn": today_bn,
     })
-
 
 
 def photo_album(request):
@@ -912,3 +964,5 @@ def video_gallery(request):
             "videos": videos
         }
     )
+
+

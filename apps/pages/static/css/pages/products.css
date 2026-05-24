@@ -89,7 +89,7 @@
 
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 0.3fr));
+  grid-template-columns: repeat(auto-fit, minmax(270px, 0.3fr));
   gap: 10px;
   margin: 5px;
   padding-bottom: 25px;

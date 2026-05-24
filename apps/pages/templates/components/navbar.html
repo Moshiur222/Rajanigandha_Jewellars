@@ -1,80 +1,97 @@
 {% load static %}
 
-<!-- NAVBAR -->
 <header class="navbar" id="navbar">
 
-    <!-- MOBILE MENU BUTTON -->
-    <button class="hamburger" id="menuOpen">
-        <i class="fa-solid fa-bars"></i>
-    </button>
+    <!-- =========================
+         NORMAL NAVBAR
+    ========================== -->
 
-    <!-- DESKTOP MENU -->
-    <nav class="desktop-menu">
+    <div class="navbar-normal" id="navbarNormal">
 
-        <a href="{% url 'pages:home' %}">
-            Home
-        </a>
+        <!-- MOBILE MENU -->
+        <button class="hamburger" id="menuOpen" type="button">
+            <i class="fa-solid fa-bars"></i>
+        </button>
 
-        <!-- Profile DROPDOWN -->
-        <div class="nav-dropdown">
+        <!-- MENU -->
+        <nav class="desktop-menu">
 
-            <button class="dropdown-btn">
-                About Us
-                <i class="fa-solid fa-angle-down"></i>
-            </button>
+            <a href="{% url 'pages:home' %}">
+                Home
+            </a>
 
-            <div class="dropdown-menu">
+            <!-- ABOUT -->
+            <div class="nav-dropdown">
+
+                <button class="dropdown-btn" type="button">
+                    About Us
+                    <i class="fa-solid fa-angle-down"></i>
+                </button>
+
+                <div class="dropdown-menu">
 
                     <div class="dropdown-item">
 
-                        <a
-                            href="{% url 'pages:our_mision' %}"
-                            class="dropdown-title"
-                        >
-                        Our Mission
+                        <a href="{% url 'pages:our_mision' %}"
+                           class="dropdown-title">
+                            Mission
                         </a>
-                        <a
-                            href="{% url 'pages:our_vision' %}"
-                            class="dropdown-title"
-                        >
-                        Our Vision
-                        </a>
-                        <a
-                            href="{% url 'pages:photo_album' %}"
-                            class="dropdown-title"
-                        >
-                        Our Photo Gallery
-                        </a>
-                        <a
-                            href="{% url 'pages:video_gallery' %}"
-                            class="dropdown-title"
-                        >
-                        Our Video Gallery
+
+                        <a href="{% url 'pages:our_vision' %}"
+                           class="dropdown-title">
+                            Vision
                         </a>
 
                     </div>
 
+                </div>
+
             </div>
 
-        </div>
-        
-        <div class="nav-dropdown">
+            <!-- GALLERY -->
+            <div class="nav-dropdown">
 
-            <button class="dropdown-btn">
-                Jewellery
-                <i class="fa-solid fa-angle-down"></i>
-            </button>
+                <button class="dropdown-btn" type="button">
+                    Our Gallery
+                    <i class="fa-solid fa-angle-down"></i>
+                </button>
 
-            <div class="dropdown-menu">
-
-                {% for menue in menues %}
+                <div class="dropdown-menu">
 
                     <div class="dropdown-item">
 
-                        <a
-                            href="{% url 'pages:menue_products' menue.slug %}"
-                            class="dropdown-title"
-                        >
+                        <a href="{% url 'pages:photo_album' %}"
+                           class="dropdown-title">
+                            Photo Gallery
+                        </a>
+
+                        <a href="{% url 'pages:video_gallery' %}"
+                           class="dropdown-title">
+                            Video Gallery
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- JEWELLERY -->
+            <div class="nav-dropdown">
+
+                <button class="dropdown-btn" type="button">
+                    Jewellery
+                    <i class="fa-solid fa-angle-down"></i>
+                </button>
+
+                <div class="dropdown-menu">
+
+                    {% for menue in menues %}
+
+                    <div class="dropdown-item">
+
+                        <a href="{% url 'pages:menue_products' menue.slug %}"
+                           class="dropdown-title">
 
                             {{ menue.get_name_display }}
 
@@ -86,52 +103,82 @@
 
                         {% if menue.visible_categories %}
 
-                            <div class="sub-dropdown">
+                        <div class="sub-dropdown">
 
-                                {% for category in menue.visible_categories %}
+                            {% for category in menue.visible_categories %}
 
-                                    <a href="{% url 'pages:category_products' menue.slug category.slug %}">
-                                        {{ category.get_name_display }}
-                                    </a>
+                            <a href="{% url 'pages:category_products' menue.slug category.slug %}">
+                                {{ category.get_name_display }}
+                            </a>
 
-                                {% endfor %}
+                            {% endfor %}
 
-                            </div>
+                        </div>
 
                         {% endif %}
 
                     </div>
 
-                {% endfor %}
+                    {% endfor %}
+
+                </div>
 
             </div>
 
-        </div>
+            <a href="{% url 'pages:live_rate' %}">
+                Today Rate
+            </a>
 
-        <a href="{% url 'pages:live_rate' %}">
-            Today Rate
-        </a>
-        <a href="{% url 'pages:contact' %}">
-            Contact
-        </a>
+            <a href="{% url 'pages:contact' %}">
+                Contact
+            </a>
 
-    </nav>
+        </nav>
 
-    <!-- NAV ACTIONS -->
-    <div class="nav-actions">
+        <!-- ACTIONS -->
+        <div class="nav-actions">
 
-        <!-- SEARCH -->
-        <button id="searchToggle" class="icon-btn">
-            <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
+            <!-- SEARCH -->
+            <button id="searchToggle"
+                    class="icon-btn"
+                    type="button">
 
-        <!-- USER -->
-        {% if request.user.is_authenticated and request.user.user_type == 2 %}
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+            </button>
+
+            <!-- USER -->
+            {% if request.user.is_authenticated and request.user.user_type == 1 %}
 
             <div class="user-dropdown">
 
-                <button class="icon-btn user-dropdown-btn">
+                <button class="icon-btn user-dropdown-btn"
+                        type="button">
+
                     <i class="fa-regular fa-user"></i>
+
+                </button>
+
+                <div class="user-dropdown-menu">
+
+                    <a href="{% url 'dashboard:home' %}" target="_blank">
+                        <i class="fa-regular fa-user"></i>
+                        My Panel
+                    </a>
+
+                </div>
+
+            </div>
+
+            {% elif request.user.is_authenticated and request.user.user_type == 2 %}
+
+            <div class="user-dropdown">
+
+                <button class="icon-btn user-dropdown-btn"
+                        type="button">
+
+                    <i class="fa-regular fa-user"></i>
+
                 </button>
 
                 <div class="user-dropdown-menu">
@@ -155,238 +202,684 @@
 
             </div>
 
-        {% else %}
+            {% else %}
 
-            <a href="{% url 'pages:login' %}" class="icon-btn">
+            <a href="{% url 'pages:login' %}"
+               class="icon-btn">
+
                 <i class="fa-regular fa-user"></i>
+
             </a>
 
-        {% endif %}
+            {% endif %}
 
-        <!-- WISHLIST -->
-        <a
-            href="{% if request.user.is_authenticated %}{% url 'pages:wishlist' %}{% else %}javascript:void(0){% endif %}"
-            class="icon-btn cart-btn wishlist-login-check"
-            data-login="{% url 'pages:login' %}"
-        >
+            <!-- WISHLIST -->
+            <a href="{% if request.user.is_authenticated %}{% url 'pages:wishlist' %}{% else %}javascript:void(0){% endif %}"
+               class="icon-btn cart-btn wishlist-login-check"
+               data-login="{% url 'pages:login' %}">
 
-            <i class="fa-regular fa-heart"></i>
+                <i class="fa-regular fa-heart"></i>
 
-            <span id="wishlistCount">
-                {{ wishlist_count|default:0 }}
-            </span>
+                <span id="wishlistCount">
+                    {{ wishlist_count|default:0 }}
+                </span>
 
-        </a>
+            </a>
 
-        <!-- CART -->
-        <a
-            href="{% if request.user.is_authenticated %}{% url 'pages:cart' %}{% else %}javascript:void(0){% endif %}"
-            class="icon-btn cart-btn cart-login-check"
-            data-login="{% url 'pages:login' %}"
-        >
+            <!-- CART -->
+            <a href="{% if request.user.is_authenticated %}{% url 'pages:cart' %}{% else %}javascript:void(0){% endif %}"
+               class="icon-btn cart-btn cart-login-check"
+               data-login="{% url 'pages:login' %}">
 
-            <i class="fa-solid fa-bag-shopping"></i>
+                <i class="fa-solid fa-bag-shopping"></i>
 
-            <span id="cartCount">
-                {{ cart_count|default:0 }}
-            </span>
+                <span id="cartCount">
+                    {{ cart_count|default:0 }}
+                </span>
 
-        </a>
-
-    </div>
-
-    <!-- SEARCH PANEL -->
-    <section class="search-panel" id="searchPanel">
-
-        <div class="search-inner">
-
-            <input
-                type="text"
-                id="searchInput"
-                placeholder="Search rings, necklaces, diamond, gold..."
-            >
-
-            <div id="searchSuggestions"></div>
+            </a>
 
         </div>
 
-    </section>
+    </div>
+
+    <!-- =========================
+         SEARCH MODE
+    ========================== -->
+
+    <div class="navbar-search-mode"
+         id="navbarSearchMode">
+
+        <div class="navbar-search-box">
+
+            <div class="search-input-wrapper">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search rings, necklaces, diamond, gold..."
+                    autocomplete="off"
+                >
+
+                <button type="button"
+                        id="searchClose"
+                        class="search-close-btn">
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+                <!-- SUGGESTIONS -->
+                <div id="searchSuggestions"></div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </header>
 
-
 <style>
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar{
+    position:relative;
+}
+
+.navbar-normal{
+    width:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+}
+
+/* =========================
+   SEARCH MODE
+========================= */
+
+.navbar.search-active .navbar-normal{
+    display:none;
+}
+
+.navbar-search-mode{
+    width:100%;
+
+    display:none;
+
+    align-items:center;
+
+    justify-content:center;
+}
+
+.navbar.search-active .navbar-search-mode{
+    display:flex;
+}
+
+/* SEARCH BOX */
+
+.navbar-search-box{
+    width:65%;
+
+    position:relative;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+}
+
+/* INPUT WRAPPER */
+
+.search-input-wrapper{
+    position:relative;
+
+    width:100%;
+
+    height:60px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    background:var(--card);
+
+    border:
+        1px solid rgba(197,155,67,.20);
+
+    border-radius:18px;
+
+    padding:0 18px;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.08);
+}
+
+/* SEARCH ICON */
+
+.search-input-wrapper i{
+    font-size:18px;
+    color:var(--gold);
+}
+
+/* INPUT */
+
+.search-input-wrapper input{
+    flex:1;
+
+    height:100%;
+
+    border:none;
+
+    outline:none;
+
+    background:transparent;
+
+    color:var(--text);
+
+    font-size:15px;
+}
+
+/* CLOSE BTN */
+
+.search-close-btn{
+    width:40px;
+    height:40px;
+
+    border-radius:50%;
+
+    border:none;
+
+    background:
+        rgba(197,155,67,.10);
+
+    color:var(--gold);
+
+    cursor:pointer;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    transition:.3s ease;
+}
+
+.search-close-btn:hover{
+    background:var(--gold);
+    color:#fff;
+}
+
+.search-close-btn:hover i{
+    color:#fff;
+}
+
+/* =========================
+   SEARCH SUGGESTION
+========================= */
+
+#searchSuggestions{
+    position:absolute;
+
+    top:calc(100% + 8px);
+
+    left:0;
+
+    width:100%;
+
+    z-index:9999;
+
+    display:none;
+
+    background:var(--card);
+
+    border:
+        1px solid rgba(197,155,67,.15);
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    box-shadow:
+        0 18px 45px rgba(0,0,0,.12);
+}
+
+.search-suggestion-item{
+    width:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    padding:16px 18px;
+
+    text-decoration:none;
+
+    color:var(--text);
+
+    border-bottom:
+        1px solid rgba(0,0,0,.06);
+
+    transition:.3s ease;
+}
+
+.search-suggestion-item:last-child{
+    border-bottom:none;
+}
+
+.search-suggestion-item:hover{
+    background:
+        rgba(197,155,67,.08);
+
+    color:var(--gold);
+}
+
+.search-empty{
+    padding:18px;
+    text-align:center;
+    color:#777;
+}
 
 /* =========================
    USER DROPDOWN
 ========================= */
 
-.user-dropdown {
-    position: relative;
+.user-dropdown{
+    position:relative;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
 }
 
-.user-dropdown-btn {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    border: none;
-    background: transparent;
-    color: var(--text);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: .3s;
-    font-size: 18px;
+.user-dropdown-menu{
+    position:absolute;
+
+    top:calc(100% + 12px);
+
+    right:0;
+
+    width:150px;
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:16px;
+
+    padding:10px;
+
+    box-shadow:
+        0 18px 50px rgba(0,0,0,.12);
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transform:
+        translateY(10px);
+
+    transition:.3s ease;
+
+    z-index:99999;
 }
 
-.user-dropdown-btn:hover {
-    background: rgba(197,155,67,.10);
-    color: var(--gold);
+.user-dropdown-menu::before{
+    content:"";
+
+    position:absolute;
+
+    top:-7px;
+
+    right:16px;
+
+    width:14px;
+
+    height:14px;
+
+    background:var(--card);
+
+    border-top:1px solid var(--border);
+
+    border-left:1px solid var(--border);
+
+    transform:rotate(45deg);
 }
 
-.user-dropdown-menu {
-    position: absolute;
-    top: calc(100% + 10px);
-    left: 50%;
-    transform: translateX(-50%) translateY(10px);
+.user-dropdown:hover .user-dropdown-menu{
+    opacity:1;
 
-    width: 210px;
+    visibility:visible;
 
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-
-    box-shadow: 0 15px 40px rgba(0,0,0,.10);
-
-    padding: 10px;
-
-    opacity: 0;
-    visibility: hidden;
-
-    transition: .3s ease;
-
-    z-index: 9999;
+    transform:translateY(0);
 }
 
-.user-dropdown:hover .user-dropdown-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(0);
+.user-dropdown-menu a{
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:12px 14px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+    color:var(--text);
+
+    font-size:14px;
+
+    font-weight:500;
+
+    transition:.3s ease;
 }
 
-.user-dropdown-menu a {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    border-radius: 10px;
-    text-decoration: none;
-    color: var(--text);
-    font-size: 14px;
-    font-weight: 500;
-    transition: .3s;
+.user-dropdown-menu a:hover{
+    background:
+        rgba(197,155,67,.10);
+
+    color:var(--gold);
 }
 
-.user-dropdown-menu a:hover {
-    background: rgba(197,155,67,.10);
-    color: var(--gold);
-}
+.active-suggestion{
+    background:
+        rgba(197,155,67,.12);
 
-.user-dropdown-menu a i {
-    width: 18px;
-    text-align: center;
+    color:var(--gold);
 }
-
 
 /* =========================
-   ICON BUTTON
+   MOBILE
 ========================= */
 
-.icon-btn {
-    position: relative;
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    text-decoration: none;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: .3s;
-    font-size: 18px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
+@media(max-width:992px){
+
+    .navbar-search-box{
+        width:80%;
+    }
+
 }
 
-.icon-btn:hover {
-    background: rgba(197,155,67,.10);
-    color: var(--gold);
-}
+@media(max-width:768px){
 
+    .navbar-search-box{
+        width:100%;
+    }
 
-/* =========================
-   COUNT BADGE
-========================= */
+    .search-input-wrapper{
+        height:54px;
+    }
 
-.cart-btn span {
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    min-width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--gold);
-    color: #fff;
-    font-size: 11px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 4px;
-}
-
-
-/* =========================
-   SEARCH PANEL
-========================= */
-
-.search-panel {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    background: var(--card);
-    border-top: 1px solid var(--border);
-    padding: 20px;
-    display: none;
-    z-index: 999;
-}
-
-.search-panel.active {
-    display: block;
-}
-
-.search-inner {
-    max-width: 700px;
-    margin: auto;
-}
-
-.search-inner input {
-    width: 100%;
-    height: 52px;
-    border-radius: 14px;
-    border: 1px solid var(--border);
-    padding: 0 18px;
-    outline: none;
-    font-size: 15px;
-    background: var(--bg);
-    color: var(--text);
-}
-
-.search-inner input:focus {
-    border-color: var(--gold);
 }
 
 </style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const navbar =
+        document.getElementById("navbar");
+
+    const searchToggle =
+        document.getElementById("searchToggle");
+
+    const searchClose =
+        document.getElementById("searchClose");
+
+    const searchInput =
+        document.getElementById("searchInput");
+
+    const suggestionBox =
+        document.getElementById("searchSuggestions");
+
+    const suggestions = [
+
+        "Gold Ring",
+        "Diamond Necklace",
+        "Silver Bracelet",
+        "Wedding Jewellery",
+        "Pearl Set",
+        "Gold Chain",
+        "Luxury Earrings",
+        "Bridal Diamond",
+        "Platinum Ring",
+        "Ruby Necklace"
+
+    ];
+
+    let currentIndex = -1;
+
+    // =========================
+    // OPEN SEARCH
+    // =========================
+
+    if(searchToggle){
+
+        searchToggle.addEventListener(
+            "click",
+            function(){
+
+                navbar.classList.add(
+                    "search-active"
+                );
+
+                setTimeout(function(){
+
+                    if(searchInput){
+                        searchInput.focus();
+                    }
+
+                },100);
+
+            }
+        );
+
+    }
+
+    // =========================
+    // CLOSE SEARCH
+    // =========================
+
+    if(searchClose){
+
+        searchClose.addEventListener(
+            "click",
+            closeSearch
+        );
+
+    }
+
+    function closeSearch(){
+
+        navbar.classList.remove(
+            "search-active"
+        );
+
+        searchInput.value = "";
+
+        suggestionBox.innerHTML = "";
+
+        suggestionBox.style.display =
+            "none";
+
+        currentIndex = -1;
+    }
+
+    // =========================
+    // INPUT SEARCH
+    // =========================
+
+    searchInput.addEventListener(
+        "input",
+        function(){
+
+            const value =
+                this.value
+                .toLowerCase()
+                .trim();
+
+            currentIndex = -1;
+
+            if(!value){
+
+                suggestionBox.innerHTML = "";
+
+                suggestionBox.style.display =
+                    "none";
+
+                return;
+            }
+
+            const filtered =
+                suggestions.filter(item =>
+
+                    item.toLowerCase()
+                    .includes(value)
+
+                );
+
+            if(!filtered.length){
+
+                suggestionBox.innerHTML =
+                    `
+                    <div class="search-empty">
+                        No Result Found
+                    </div>
+                    `;
+
+                suggestionBox.style.display =
+                    "block";
+
+                return;
+            }
+
+            suggestionBox.innerHTML =
+                filtered.map(item => `
+
+                    <a href="/?search=${encodeURIComponent(item)}"
+                       class="search-suggestion-item">
+
+                        <i class="fa-solid fa-magnifying-glass"></i>
+
+                        <span>${item}</span>
+
+                    </a>
+
+                `).join("");
+
+            suggestionBox.style.display =
+                "block";
+
+        }
+    );
+
+    // =========================
+    // KEYBOARD NAVIGATION
+    // =========================
+
+    searchInput.addEventListener(
+        "keydown",
+        function(e){
+
+            const items =
+                document.querySelectorAll(
+                    ".search-suggestion-item"
+                );
+
+            if(!items.length) return;
+
+            // DOWN
+            if(e.key === "ArrowDown"){
+
+                e.preventDefault();
+
+                currentIndex++;
+
+                if(currentIndex >= items.length){
+                    currentIndex = 0;
+                }
+
+                updateSelection(items);
+            }
+
+            // UP
+            else if(e.key === "ArrowUp"){
+
+                e.preventDefault();
+
+                currentIndex--;
+
+                if(currentIndex < 0){
+                    currentIndex =
+                        items.length - 1;
+                }
+
+                updateSelection(items);
+            }
+
+            // ENTER
+            else if(e.key === "Enter"){
+
+                e.preventDefault();
+
+                if(
+                    currentIndex > -1 &&
+                    items[currentIndex]
+                ){
+
+                    window.location.href =
+                        items[currentIndex].href;
+                }
+            }
+
+        }
+    );
+
+    // =========================
+    // UPDATE ACTIVE ITEM
+    // =========================
+
+    function updateSelection(items){
+
+        items.forEach(function(item){
+
+            item.classList.remove(
+                "active-suggestion"
+            );
+
+        });
+
+        if(items[currentIndex]){
+
+            items[currentIndex].classList.add(
+                "active-suggestion"
+            );
+
+            items[currentIndex].scrollIntoView({
+                block:"nearest"
+            });
+
+        }
+
+    }
+
+});
+</script>

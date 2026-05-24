@@ -3,133 +3,115 @@
 
 {% block page_css %}
 <style>
+.filter-head{margin-bottom:20px;border-bottom:1px solid rgba(197,155,67,.2);padding-bottom:14px}
+.filter-head h3{margin-bottom:4px;color:#c59b43}
+.filter-head p{font-size:13px;opacity:.75}
 
-.filter-head {
-    margin-bottom: 20px;
-    border-bottom: 1px solid rgba(197,155,67,0.2);
-    padding-bottom: 14px;
+.luxury-filter label{display:block;margin:18px 0 10px;font-size:13px;font-weight:600;color:#c59b43}
+
+.filter-btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+
+.filter-btn{
+    padding:10px 18px;
+    border-radius:50px;
+    text-decoration:none;
+    border:1px solid rgba(197,155,67,.25);
+    background:#fff;
+    color:#111;
+    font-size:14px;
+    font-weight:600;
+    transition:.3s ease;
+    cursor:pointer;
 }
 
-.filter-head h3 {
-    margin-bottom: 4px;
-    color: #c59b43;
-}
-
-.filter-head p {
-    font-size: 13px;
-    opacity: .75;
-}
-
-.luxury-filter label {
-    display: block;
-    margin: 16px 0 8px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #c59b43;
+.filter-btn:hover,
+.filter-btn.active{
+    background:#c59b43;
+    color:#fff;
+    border-color:#c59b43;
 }
 
 .luxury-filter select,
-.luxury-filter input[type="text"],
-.luxury-filter input[type="range"] {
-    width: 100%;
+.luxury-filter input[type="range"]{
+    width:100%;
 }
 
-.range-price {
-    margin: 10px 0 18px;
-    font-weight: 700;
-    color: #c59b43;
+.range-price{
+    margin:10px 0 18px;
+    font-weight:700;
+    color:#c59b43;
 }
 
-.reset-filter {
-    margin-top: 10px;
-    text-align: center;
-    text-decoration: none;
+.reset-filter{
+    margin-top:10px;
+    text-align:center;
+    text-decoration:none;
 }
 
-.professional-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 18px;
-    margin-bottom: 28px;
-    padding: 18px 20px;
-    border: 1px solid;
-    border-radius: 18px;
+.professional-toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:18px;
+    margin-bottom:28px;
+    padding:18px 20px;
+    border:1px solid rgba(197,155,67,.15);
+    border-radius:18px;
 }
 
-.search-box {
-    display: flex;
-    align-items: center;
-    min-width: 300px;
-    background: #fff;
-    border-radius: 40px;
-    overflow: hidden;
-    border: 1px solid rgba(0,0,0,0.08);
+.products-area{
+    transition:opacity .3s ease;
 }
 
-.search-box input {
-    border: none;
-    outline: none;
-    padding: 13px 18px;
-    flex: 1;
+.luxury-product-card{
+    position:relative;
+    border-radius:24px;
+    overflow:visible!important;
+    background:#fff;
+    border:1px solid rgba(197,155,67,.18);
+    box-shadow:0 18px 45px rgba(0,0,0,.08);
+    transition:.3s ease;
 }
 
-.search-box button {
-    border: none;
-    background: #c59b43;
-    color: #fff;
-    padding: 13px 18px;
-    cursor: pointer;
+.luxury-product-card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 24px 60px rgba(0,0,0,.14);
 }
 
-.luxury-product-card {
-    position: relative;
-    border-radius: 24px;
-    overflow: visible !important;
-    background: #fff;
-    border: 1px solid rgba(197,155,67,0.18);
-    box-shadow: 0 18px 45px rgba(0,0,0,0.08);
-    transition: .3s ease;
+.luxury-product-card .product-image{
+    background:linear-gradient(135deg,#faf7ef,#fff);
 }
 
-.luxury-product-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 24px 60px rgba(0,0,0,0.14);
+.price-note{
+    display:block;
+    margin-top:6px;
+    color:#777;
 }
 
-.luxury-product-card .product-image {
-    background: linear-gradient(135deg, #faf7ef, #fff);
+.empty-products{
+    grid-column:1/-1;
+    text-align:center;
+    padding:80px 20px;
+    border-radius:24px;
+    background:rgba(0,0,0,.08);
+    border:1px dashed rgba(197,155,67,.35);
 }
 
-.price-note {
-    display: block;
-    margin-top: 6px;
-    color: #777;
+.empty-products i{
+    font-size:42px;
+    color:#c59b43;
+    margin-bottom:14px;
 }
 
-.empty-products {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 80px 20px;
-    border-radius: 24px;
-    background: rgba(0, 0, 0, 0.08);
-    border: 1px dashed rgba(197,155,67,0.35);
-}
-
-.empty-products i {
-    font-size: 42px;
-    color: #c59b43;
-    margin-bottom: 14px;
-}
-
-@media (max-width: 768px) {
-    .professional-toolbar {
-        flex-direction: column;
-        align-items: stretch;
+@media(max-width:768px){
+    .professional-toolbar{
+        flex-direction:column;
+        align-items:stretch;
     }
 
-    .search-box {
-        min-width: 100%;
+    .filter-btn{
+        padding:8px 14px;
+        font-size:13px;
     }
 }
 </style>
@@ -137,257 +119,236 @@
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-    const maxPriceRange =
-        document.getElementById("maxPriceRange");
+    initFilters();
 
-    const maxPriceValue =
-        document.getElementById("maxPriceValue");
+    function initFilters() {
 
-    if (maxPriceRange && maxPriceValue) {
+        const form =
+            document.getElementById("filterForm");
 
-        maxPriceRange.addEventListener(
-            "input",
-            function () {
-                maxPriceValue.innerText =
-                    maxPriceRange.value;
+        const productArea =
+            document.querySelector(".products-area");
+
+        const maxPriceRange =
+            document.getElementById("maxPriceRange");
+
+        const maxPriceValue =
+            document.getElementById("maxPriceValue");
+
+        let timer = null;
+
+        function buildUrl(extraParams = {}) {
+
+            const url =
+                new URL(window.location.href);
+
+            if (form) {
+
+                const formData =
+                    new FormData(form);
+
+                for (const [key, value] of formData.entries()) {
+
+                    if (value) {
+                        url.searchParams.set(key, value);
+                    } else {
+                        url.searchParams.delete(key);
+                    }
+                }
             }
-        );
-    }
 
-    const menueFilter =
-        document.getElementById("menueFilter");
+            Object.keys(extraParams).forEach(function (key) {
 
-    const categoryFilter =
-        document.getElementById("categoryFilter");
+                if (extraParams[key]) {
+                    url.searchParams.set(
+                        key,
+                        extraParams[key]
+                    );
+                } else {
+                    url.searchParams.delete(key);
+                }
 
-    function filterCategoryOptions() {
+            });
 
-        if (!menueFilter || !categoryFilter) return;
+            return url;
+        }
 
-        const selectedMenue =
-            menueFilter.value;
+        function smoothFilter(extraParams = {}) {
 
-        Array.from(categoryFilter.options)
-        .forEach(function (option) {
+            const url =
+                buildUrl(extraParams);
 
-            if (!option.dataset.menue) {
-                option.hidden = false;
-                return;
+            if (productArea) {
+                productArea.style.opacity = ".4";
+                productArea.style.pointerEvents = "none";
             }
 
-            option.hidden =
-                selectedMenue &&
-                option.dataset.menue !== selectedMenue;
+            fetch(url.toString(), {
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+
+            .then(response => response.text())
+
+            .then(html => {
+
+                const parser =
+                    new DOMParser();
+
+                const doc =
+                    parser.parseFromString(
+                        html,
+                        "text/html"
+                    );
+
+                const newProductsArea =
+                    doc.querySelector(".products-area");
+
+                const newFilterArea =
+                    doc.querySelector(".filters");
+
+                const currentProductArea =
+                    document.querySelector(".products-area");
+
+                const currentFilterArea =
+                    document.querySelector(".filters");
+
+                if (newProductsArea && currentProductArea) {
+                    currentProductArea.innerHTML =
+                        newProductsArea.innerHTML;
+                }
+
+                if (newFilterArea && currentFilterArea) {
+                    currentFilterArea.innerHTML =
+                        newFilterArea.innerHTML;
+                }
+
+                window.history.pushState(
+                    {},
+                    "",
+                    url.toString()
+                );
+
+                const updatedProductArea =
+                    document.querySelector(".products-area");
+
+                if (updatedProductArea) {
+                    updatedProductArea.style.opacity = "1";
+                    updatedProductArea.style.pointerEvents = "auto";
+                }
+
+                initFilters();
+
+            })
+
+            .catch(() => {
+                window.location.href =
+                    url.toString();
+            });
+        }
+
+        document.querySelectorAll(
+            "#filterForm select"
+        ).forEach(function (select) {
+
+            select.addEventListener(
+                "change",
+                function () {
+                    smoothFilter();
+                }
+            );
+
         });
 
-        const selectedOption =
-            categoryFilter.options[
-                categoryFilter.selectedIndex
-            ];
+        if (maxPriceRange && maxPriceValue) {
 
-        if (selectedOption && selectedOption.hidden) {
-            categoryFilter.value = "";
+            maxPriceValue.innerText =
+                maxPriceRange.value;
+
+            maxPriceRange.addEventListener(
+                "input",
+                function () {
+
+                    maxPriceValue.innerText =
+                        this.value;
+
+                    clearTimeout(timer);
+
+                    timer = setTimeout(function () {
+                        smoothFilter();
+                    }, 700);
+
+                }
+            );
         }
-    }
 
-    if (menueFilter && categoryFilter) {
-        filterCategoryOptions();
+        document.querySelectorAll(
+            ".filter-btn"
+        ).forEach(function (btn) {
 
-        menueFilter.addEventListener(
-            "change",
-            filterCategoryOptions
-        );
+            btn.addEventListener(
+                "click",
+                function (e) {
+
+                    e.preventDefault();
+
+                    smoothFilter({
+                        menue:
+                            this.dataset.menue || "",
+
+                        category:
+                            this.dataset.category || "",
+                    });
+
+                }
+            );
+
+        });
+
     }
 
 });
 </script>
 {% endblock page_css %}
 
-<section class="section shop-section reveal active" id="products">
-    <hr class="hr_tag">
-    <div class="section-title">
 
+<section class="section shop-section reveal active" id="products">
+
+    <hr class="hr_tag">
+
+    <div class="section-title">
         <span>Luxury Collection</span>
 
         <h2>
-
             {% if menue %}
                 {{ menue.get_name_display }} Jewellery
-
             {% elif category %}
                 {{ category.get_name_display }} Jewellery
-
             {% elif subcategory %}
                 {{ subcategory.get_name_display }}
-
             {% else %}
                 All Jewellery
-
             {% endif %}
-
         </h2>
 
-        <p>
-            Explore our premium jewellery collection with smart filters.
-        </p>
-
+        <p>Explore our premium jewellery collection with smart filters.</p>
     </div>
+
     <hr class="hr_tag">
+
     <div class="shop-layout">
 
         {% if menue or category or subcategory %}
 
         <aside class="filters luxury-filter">
 
-            <form method="GET" action="">
+            <form method="GET" action="" id="filterForm">
 
                 <div class="filter-head">
-
                     <h3>Filter Collections</h3>
-
-                    <p>
-                        Find your perfect jewellery
-                    </p>
-
+                    <p>Find your perfect jewellery</p>
                 </div>
-
-                <label>Sort</label>
-
-                <select name="sort">
-
-                    <option value="latest"
-                        {% if selected_sort == "latest" %}
-                            selected
-                        {% endif %}
-                    >
-                        Latest
-                    </option>
-
-                    <option value="price_low"
-                        {% if selected_sort == "price_low" %}
-                            selected
-                        {% endif %}
-                    >
-                        Price Low To High
-                    </option>
-
-                    <option value="price_high"
-                        {% if selected_sort == "price_high" %}
-                            selected
-                        {% endif %}
-                    >
-                        Price High To Low
-                    </option>
-
-                    <option value="popular"
-                        {% if selected_sort == "popular" %}
-                            selected
-                        {% endif %}
-                    >
-                        Popular
-                    </option>
-
-                </select>
-
-                <label>Menue</label>
-
-                <select name="menue" id="menueFilter">
-
-                    <option value="">
-                        All Menues
-                    </option>
-
-                    {% for menue in menues %}
-
-                    <option
-                        value="{{ menue.id }}"
-                        {% if selected_menue == menue.id|stringformat:"s" %}
-                            selected
-                        {% endif %}
-                    >
-                        {{ menue.get_name_display }}
-                    </option>
-
-                    {% endfor %}
-
-                </select>
-
-                <label>Category</label>
-
-                <select name="category" id="categoryFilter">
-
-                    <option value="">
-                        All Categories
-                    </option>
-
-                    {% for category in categories %}
-
-                    <option
-                        value="{{ category.id }}"
-                        data-menue="{{ category.menue.id }}"
-                        {% if selected_category == category.id|stringformat:"s" %}
-                            selected
-                        {% endif %}
-                    >
-                        {{ category.get_name_display }}
-                    </option>
-
-                    {% endfor %}
-
-                </select>
-
-                <label>Sub Category</label>
-
-                <select name="subcategory">
-
-                    <option value="">
-                        All Sub Categories
-                    </option>
-
-                    {% for sub_category in sub_categories %}
-
-                    <option
-                        value="{{ sub_category.id }}"
-                        {% if selected_subcategory == sub_category.id|stringformat:"s" %}
-                            selected
-                        {% endif %}
-                    >
-                        {{ sub_category.name }}
-                    </option>
-
-                    {% endfor %}
-
-                </select>
-
-                <label>Availability</label>
-
-                <select name="availability">
-
-                    <option value=""
-                        {% if selected_availability == "" %}
-                            selected
-                        {% endif %}
-                    >
-                        All
-                    </option>
-
-                    <option value="in_stock"
-                        {% if selected_availability == "in_stock" %}
-                            selected
-                        {% endif %}
-                    >
-                        In Stock
-                    </option>
-
-                    <option value="out_stock"
-                        {% if selected_availability == "out_stock" %}
-                            selected
-                        {% endif %}
-                    >
-                        Out of Stock
-                    </option>
-
-                </select>
 
                 <label>Max Price</label>
 
@@ -402,27 +363,112 @@ document.addEventListener("DOMContentLoaded", function () {
                 >
 
                 <p class="range-price">
-
                     Up to ৳
-
                     <span id="maxPriceValue">
                         {{ max_price|default:max_product_price|bd_currency }}
                     </span>
-
                 </p>
 
-                <button class="gold-btn full" type="submit">
+                <label>Sort</label>
 
-                    <i class="fa-solid fa-filter"></i>
+                <select name="sort">
+                    <option value="latest" {% if selected_sort == "latest" %}selected{% endif %}>
+                        Latest
+                    </option>
 
-                    Apply Filter
+                    <option value="price_low" {% if selected_sort == "price_low" %}selected{% endif %}>
+                        Price Low To High
+                    </option>
 
-                </button>
+                    <option value="price_high" {% if selected_sort == "price_high" %}selected{% endif %}>
+                        Price High To Low
+                    </option>
 
-                <a
-                    href="{{ request.path }}"
-                    class="outline-btn full reset-filter"
-                >
+                    <option value="popular" {% if selected_sort == "popular" %}selected{% endif %}>
+                        Popular
+                    </option>
+                </select>
+
+                <label>Menue</label>
+
+                <div class="filter-btn-row">
+
+                    <a href="#"
+                       data-menue=""
+                       data-category=""
+                       class="filter-btn {% if not selected_menue %}active{% endif %}">
+                        All
+                    </a>
+
+                    {% for menu_item in menues %}
+                    <a href="#"
+                       data-menue="{{ menu_item.id }}"
+                       data-category=""
+                       class="filter-btn {% if selected_menue == menu_item.id|stringformat:'s' %}active{% endif %}">
+                        {{ menu_item.get_name_display }}
+                    </a>
+                    {% endfor %}
+
+                </div>
+
+                <label>Category</label>
+
+                <div class="filter-btn-row">
+
+                    <a href="#"
+                       data-menue="{{ selected_menue }}"
+                       data-category=""
+                       class="filter-btn {% if not selected_category %}active{% endif %}">
+                        All
+                    </a>
+
+                    {% for category_item in categories %}
+
+                        {% if not selected_menue or selected_menue == category_item.menue.id|stringformat:'s' %}
+
+                        <a href="#"
+                           data-menue="{{ category_item.menue.id }}"
+                           data-category="{{ category_item.id }}"
+                           class="filter-btn {% if selected_category == category_item.id|stringformat:'s' %}active{% endif %}">
+                            {{ category_item.get_name_display }}
+                        </a>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                </div>
+
+                <label>Sub Category</label>
+
+                <select name="subcategory">
+                    <option value="">All Sub Categories</option>
+
+                    {% for sub_category in sub_categories %}
+                    <option value="{{ sub_category.id }}"
+                        {% if selected_subcategory == sub_category.id|stringformat:"s" %}selected{% endif %}>
+                        {{ sub_category.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+
+                <label>Availability</label>
+
+                <select name="availability">
+                    <option value="" {% if selected_availability == "" %}selected{% endif %}>
+                        All
+                    </option>
+
+                    <option value="in_stock" {% if selected_availability == "in_stock" %}selected{% endif %}>
+                        In Stock
+                    </option>
+
+                    <option value="out_stock" {% if selected_availability == "out_stock" %}selected{% endif %}>
+                        Out of Stock
+                    </option>
+                </select>
+
+                <a href="{{ request.path }}" class="outline-btn full reset-filter">
                     Reset Filter
                 </a>
 
@@ -435,19 +481,13 @@ document.addEventListener("DOMContentLoaded", function () {
         <div class="products-area">
 
             {% if menue or category or subcategory %}
-
-            <form method="GET" class="shop-toolbar professional-toolbar">
-
+            <div class="shop-toolbar professional-toolbar">
                 <p>
                     Showing
-                    <strong>
-                        {{ product_count }}
-                    </strong>
+                    <strong>{{ product_count }}</strong>
                     jewellery
                 </p>
-
-            </form>
-
+            </div>
             {% endif %}
 
             <div class="product-grid" id="productGrid">
@@ -457,17 +497,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 <article class="product-card luxury-product-card">
 
                     {% if product.is_available and product.stock > 0 %}
-
-                    <span class="stock">
-                        In Stock
-                    </span>
-
+                        <span class="stock">In Stock</span>
                     {% else %}
-
-                    <span class="stock out-stock">
-                        Out of Stock
-                    </span>
-
+                        <span class="stock out-stock">Out of Stock</span>
                     {% endif %}
 
                     <button
@@ -481,34 +513,21 @@ document.addEventListener("DOMContentLoaded", function () {
                     <a href="{% url 'pages:quick_view_product' product.slug %}?next={{ request.get_full_path|urlencode }}">
 
                         <div class="product-image">
-
                             {% if product.image %}
-
-                            <img
-                                src="{{ product.image.url }}"
-                                alt="{{ product.name }}"
-                            >
-
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
                             {% endif %}
-
                         </div>
 
                         <div class="product-info">
 
                             <span class="product-meta">
-
                                 {{ product.menue.get_name_display }}
-
                                 /
-
                                 {{ product.category.get_name_display }}
 
                                 {% if product.subcategory %}
-
-                                / {{ product.subcategory.name }}
-
+                                    / {{ product.subcategory.name }}
                                 {% endif %}
-
                             </span>
 
                             <h3>{{ product.name }}</h3>
@@ -518,11 +537,9 @@ document.addEventListener("DOMContentLoaded", function () {
                             </small>
 
                             <div class="price-row">
-
                                 <span class="new-price">
                                     ৳{{ product.final_price|bd_currency }}
                                 </span>
-
                             </div>
 
                             <small class="price-note">
@@ -560,15 +577,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 {% empty %}
 
                 <div class="empty-products">
-
                     <i class="fa-solid fa-gem"></i>
-
                     <h3>No jewellery found</h3>
-
-                    <p>
-                        Try changing your filter or search keyword.
-                    </p>
-
+                    <p>Try changing your filter or search keyword.</p>
                 </div>
 
                 {% endfor %}
