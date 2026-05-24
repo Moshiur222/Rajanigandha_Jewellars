@@ -658,12 +658,11 @@ from django.utils.text import slugify
 
 class PhotoAlbum(models.Model):
     title = models.CharField(max_length=120)
-
     cover_image = models.ImageField(upload_to="albums/")
-
     slug = models.SlugField(unique=True, blank=True)
-
     order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
+    updated_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
 
     class Meta:
         ordering = ["order", "-id"]

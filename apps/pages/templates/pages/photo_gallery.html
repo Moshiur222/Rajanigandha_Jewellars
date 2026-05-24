@@ -1,87 +1,334 @@
 {% extends "base/base.html" %}
 {% load static %}
 
-{% block title %}{{ album.title }}{% endblock %}
+{% block title %}
+{{ album.title }} — Gallery
+{% endblock %}
 
 {% block page_css %}
 <style>
+:root{
+    --bg:#fafaf9;
+    --white:#ffffff;
+    --text:#1c1917;
+    --muted:#78716c;
+    --border:#e7e5e4;
+    --gold:#c59b43;
+    --gold-soft:rgba(197,155,67,.10);
+}
+
 .gallery-page{
-    padding:40px 4%;
+    margin: 8px;
+    min-height:100vh;
+    padding:32px 4%;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
 }
 
-.gallery-title{
-    text-align:center;
-    margin-bottom:35px;
+.gallery-container{
+    max-width:1240px;
+    margin:0 auto;
 }
 
-.gallery-title span{
-    display:inline-block;
-    padding:10px 18px;
-    border-radius:30px;
-    background:rgba(212,175,55,.12);
-    color:#c59b43;
+.back-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:11px 22px;
+    background:var(--white);
+    border:1px solid var(--border);
+    border-radius:50px;
+    color:var(--text);
     font-size:13px;
     font-weight:700;
-    letter-spacing:1px;
-    margin-bottom:12px;
+    text-decoration:none;
+    margin-bottom:26px;
+    box-shadow:0 8px 25px rgba(0,0,0,.04);
+    transition:.3s ease;
 }
 
-.gallery-title h1{
-    font-size:42px;
-    color:#111;
-    font-family:'Playfair Display',serif;
+.back-btn:hover{
+    transform:translateX(-4px);
+    color:var(--gold);
+    border-color:var(--gold);
+}
+
+.gallery-header-wrapper{
+    text-align:center;
+    margin-bottom:40px;
+    padding-bottom:24px;
+    border-bottom:1px solid var(--border);
+}
+
+.gallery-tagline{
+    display:inline-flex;
+    padding:7px 18px;
+    border-radius:50px;
+    background:var(--gold-soft);
+    color:var(--gold);
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    margin-bottom:16px;
+}
+
+.gallery-header-wrapper h1{
+    font-size:clamp(34px,5vw,58px);
+    font-weight:700;
+    color:var(--text);
+    margin:0 0 12px;
+    font-family:"Playfair Display",Georgia,serif;
+    line-height:1.1;
+}
+
+.gallery-meta-info{
+    font-size:14px;
+    color:var(--muted);
+    font-weight:600;
 }
 
 .gallery-grid{
-    display:grid;
-    grid-template-columns:repeat(3, 1fr);
-    gap:24px;
+    columns:3 320px;
+    column-gap:26px;
 }
 
 .gallery-card{
-    background:#fff;
-    border:1px solid #eee;
-    border-radius:18px;
+    break-inside:avoid;
+    margin-bottom:26px;
+    background:var(--white);
+    border-radius:20px;
     overflow:hidden;
-    box-shadow:0 10px 30px rgba(0,0,0,.06);
+    border:1px solid var(--border);
+    box-shadow:0 10px 35px rgba(0,0,0,.05);
+    transition:.35s ease;
+}
+
+.gallery-image-box{
+    position:relative;
+    overflow:hidden;
+    background:#f5f5f4;
+    cursor:zoom-in;
 }
 
 .gallery-card img{
     width:100%;
-    height:280px;
-    object-fit:cover;
+    height:auto;
     display:block;
+    transition:.7s ease;
+    user-select:none;
+    -webkit-user-drag:none;
 }
 
-.gallery-card h3{
-    padding:15px;
-    margin:0;
-    font-size:18px;
-    color:#111;
-    text-align:center;
+.gallery-caption-overlay{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    padding:50px 22px 20px;
+    background:linear-gradient(to top,rgba(0,0,0,.88),rgba(0,0,0,.35),transparent);
+    opacity:0;
+    transform:translateY(14px);
+    transition:.35s ease;
+    pointer-events:none;
 }
 
-.back-btn{
-    display:inline-block;
-    margin-bottom:25px;
-    color:#c59b43;
+.gallery-caption-overlay h3{
+    color:#fff;
+    font-size:15px;
     font-weight:700;
-    text-decoration:none;
+    margin:0;
 }
 
-@media(max-width:992px){
-    .gallery-grid{
-        grid-template-columns:repeat(2, 1fr);
+.gallery-card:hover{
+    transform:translateY(-6px);
+    border-color:rgba(197,155,67,.40);
+    box-shadow:0 25px 60px rgba(0,0,0,.12);
+}
+
+.gallery-card:hover img{
+    transform:scale(1.05);
+}
+
+.gallery-card:hover .gallery-caption-overlay{
+    opacity:1;
+    transform:translateY(0);
+}
+
+.empty-state{
+    text-align:center;
+    padding:100px 24px;
+    background:var(--white);
+    border-radius:20px;
+    border:1px dashed #d6d3d1;
+}
+
+.empty-icon{
+    width:60px;
+    height:60px;
+    margin:0 auto 22px;
+    color:var(--gold);
+}
+
+.empty-state h2{
+    font-size:28px;
+    margin-bottom:10px;
+    color:var(--text);
+    font-family:"Playfair Display",Georgia,serif;
+}
+
+.empty-state p{
+    color:var(--muted);
+    font-size:15px;
+}
+
+/* IMAGE VIEWER */
+
+.image-viewer{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.92);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:30px;
+    z-index:999999;
+    opacity:0;
+    visibility:hidden;
+    transition:.35s ease;
+}
+
+.image-viewer.active{
+    opacity:1;
+    visibility:visible;
+}
+
+.image-viewer img{
+    max-width:95%;
+    max-height:95vh;
+    border-radius:16px;
+    object-fit:contain;
+    box-shadow:0 30px 80px rgba(0,0,0,.45);
+    animation:zoomIn .35s ease;
+}
+
+.image-close{
+    position:absolute;
+    top:20px;
+    right:20px;
+    width:52px;
+    height:52px;
+    border:none;
+    border-radius:50%;
+    background:rgba(255,255,255,.10);
+    color:#fff;
+    font-size:22px;
+    cursor:pointer;
+    backdrop-filter:blur(10px);
+    transition:.3s ease;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.image-close:hover{
+    background:#fff;
+    color:#111;
+}
+
+@keyframes zoomIn{
+    from{
+        transform:scale(.85);
+        opacity:0;
+    }
+    to{
+        transform:scale(1);
+        opacity:1;
     }
 }
 
-@media(max-width:576px){
+@media(max-width:1024px){
     .gallery-grid{
-        grid-template-columns:1fr;
+        columns:2 280px;
+    }
+}
+
+@media(max-width:768px){
+    .gallery-page{
+        padding:24px 14px;
     }
 
-    .gallery-title h1{
+    .gallery-grid{
+        columns:1;
+    }
+
+    .gallery-header-wrapper h1{
         font-size:32px;
+    }
+
+    .gallery-caption-overlay{
+        opacity:1;
+        transform:none;
+        padding:36px 18px 16px;
+    }
+
+    .gallery-card{
+        margin-bottom:22px;
+    }
+
+    .image-close{
+        width:44px;
+        height:44px;
+        font-size:18px;
+    }
+}
+
+
+.image-nav{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    width:54px;
+    height:54px;
+    border:none;
+    border-radius:50%;
+    background:rgba(255,255,255,.12);
+    color:#fff;
+    font-size:22px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    backdrop-filter:blur(10px);
+    transition:.3s ease;
+    z-index:2;
+}
+
+.image-nav:hover{
+    background:#fff;
+    color:#111;
+}
+
+.image-prev{
+    left:24px;
+}
+
+.image-next{
+    right:24px;
+}
+
+@media(max-width:768px){
+    .image-nav{
+        width:44px;
+        height:44px;
+        font-size:18px;
+    }
+
+    .image-prev{
+        left:10px;
+    }
+
+    .image-next{
+        right:10px;
     }
 }
 </style>
@@ -90,40 +337,215 @@
 {% block content %}
 <div class="cart_border">
 
-<section class="gallery-page">
+<div class="gallery-page">
 
-    <a href="{% url 'pages:photo_album' %}" class="back-btn">
-        ← Back to Album
-    </a>
+    <div class="gallery-container">
 
-    <div class="gallery-title">
-        <span>PHOTO GALLERY</span>
-        <h1>{{ album.title }}</h1>
-    </div>
+        <a href="{% url 'pages:photo_album' %}" class="back-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Back to Albums
+        </a>
 
-    <div class="gallery-grid">
+        <header class="gallery-header-wrapper">
 
-        {% for photo in photos %}
+            <div class="gallery-tagline">
+                Photo Gallery
+            </div>
 
-        <div class="gallery-card">
+            <h1>
+                {{ album.title }}
+            </h1>
 
-            <img src="{{ photo.image.url }}" alt="{{ photo.title }}">
-
-            {% if photo.title %}
-                <h3>{{ photo.title }}</h3>
+            {% if photos %}
+            <div class="gallery-meta-info">
+                Curated Collection • {{ photos|length }} Showcase Frame{{ photos|length|pluralize }}
+            </div>
             {% endif %}
+
+        </header>
+
+        <div class="gallery-grid">
+
+            {% for photo in photos %}
+
+            <div class="gallery-card">
+
+                <div class="gallery-image-box openImageModal">
+
+                    <img
+                        src="{{ photo.image.url }}"
+                        alt="{{ photo.title|default:album.title }}"
+                        loading="lazy"
+                        draggable="false"
+                    >
+
+                    {% if photo.title %}
+                    <div class="gallery-caption-overlay">
+                        <h3>{{ photo.title }}</h3>
+                    </div>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="empty-state">
+
+                <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21 15 16 10 5 21"/>
+                </svg>
+
+                <h2>No captures found</h2>
+                <p>We are currently uploading assets into this collection.</p>
+
+            </div>
+
+            {% endfor %}
 
         </div>
 
-        {% empty %}
-
-        <h2>No Photo Found</h2>
-
-        {% endfor %}
-
     </div>
 
-</section>
+</div>
 
 </div>
+
+<!-- IMAGE MODAL -->
+<div class="image-viewer" id="imageViewer">
+
+    <button class="image-close" id="closeViewer" type="button">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <button class="image-nav image-prev" id="prevImage" type="button">
+        <i class="fa-solid fa-chevron-left"></i>
+    </button>
+
+    <img src="" id="viewerImage" alt="Preview">
+
+    <button class="image-nav image-next" id="nextImage" type="button">
+        <i class="fa-solid fa-chevron-right"></i>
+    </button>
+
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const cards = document.querySelectorAll(".openImageModal");
+    const viewer = document.getElementById("imageViewer");
+    const viewerImage = document.getElementById("viewerImage");
+    const closeViewer = document.getElementById("closeViewer");
+    const prevImage = document.getElementById("prevImage");
+    const nextImage = document.getElementById("nextImage");
+
+    let images = [];
+    let currentIndex = 0;
+
+    cards.forEach(function(card, index){
+
+        const img = card.querySelector("img");
+
+        if(img){
+            images.push({
+                src: img.src,
+                alt: img.alt
+            });
+        }
+
+        card.addEventListener("click", function(){
+            currentIndex = index;
+            openImage(currentIndex);
+        });
+
+    });
+
+    function openImage(index){
+        if(!viewer || !viewerImage || !images.length) return;
+
+        viewerImage.src = images[index].src;
+        viewerImage.alt = images[index].alt;
+
+        viewer.classList.add("active");
+        document.body.style.overflow = "hidden";
+    }
+
+    function showNext(){
+        currentIndex++;
+
+        if(currentIndex >= images.length){
+            currentIndex = 0;
+        }
+
+        openImage(currentIndex);
+    }
+
+    function showPrev(){
+        currentIndex--;
+
+        if(currentIndex < 0){
+            currentIndex = images.length - 1;
+        }
+
+        openImage(currentIndex);
+    }
+
+    function closeModal(){
+        viewer.classList.remove("active");
+        viewerImage.src = "";
+        document.body.style.overflow = "";
+    }
+
+    if(closeViewer){
+        closeViewer.addEventListener("click", closeModal);
+    }
+
+    if(nextImage){
+        nextImage.addEventListener("click", function(e){
+            e.stopPropagation();
+            showNext();
+        });
+    }
+
+    if(prevImage){
+        prevImage.addEventListener("click", function(e){
+            e.stopPropagation();
+            showPrev();
+        });
+    }
+
+    if(viewer){
+        viewer.addEventListener("click", function(e){
+            if(e.target === viewer){
+                closeModal();
+            }
+        });
+    }
+
+    document.addEventListener("keydown", function(e){
+
+        if(!viewer.classList.contains("active")) return;
+
+        if(e.key === "Escape"){
+            closeModal();
+        }
+
+        if(e.key === "ArrowRight"){
+            showNext();
+        }
+
+        if(e.key === "ArrowLeft"){
+            showPrev();
+        }
+
+    });
+
+});
+</script>
 {% endblock %}
