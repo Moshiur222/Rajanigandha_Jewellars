@@ -37,4 +37,9 @@ urlpatterns = [
     path('photo-gallery/<slug:slug>/add/', views.photo_gallery_add, name='photo_gallery_add'),
     path('photo-gallery/update/<slug:slug>/', views.photo_gallery_update, name='photo_gallery_update'),
     path('photo-gallery/delete/<slug:slug>/', views.photo_gallery_delete, name='photo_gallery_delete'),
+
+    path('video-gallery/', views.video_gallery, name='video_gallery'),
+    path('video-gallery/add/', views.video_add, name='video_add'),
+    path('video-gallery/update/<int:pk>/', views.video_update, name='video_update'),
+    path('video-gallery/delete/<int:pk>/', views.video_delete, name='video_delete'),
 ]

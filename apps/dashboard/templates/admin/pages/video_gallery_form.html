@@ -1,0 +1,984 @@
+{% extends "admin/base/base.html" %}
+{% load static %}
+
+{% block admin_css %}
+<style>
+    /* ========================================
+       Video Gallery Management Styles
+       ======================================== */
+    
+    :root {
+        --youtube-red: #FF0000;
+        --youtube-dark: #CC0000;
+        --youtube-light: rgba(255, 0, 0, 0.1);
+    }
+
+    .video-management-container {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 24px;
+    }
+
+    /* Messages Container */
+    .messages-container {
+        margin-bottom: 24px;
+    }
+
+    .alert {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 20px;
+        border-radius: var(--radius);
+        margin-bottom: 12px;
+        font-size: 14px;
+        font-weight: 500;
+        animation: slideInDown 0.3s ease;
+    }
+
+    .alert i {
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .alert-success {
+        background: rgba(16, 185, 129, 0.1);
+        border-left: 4px solid var(--success);
+        color: #065f46;
+    }
+
+    .alert-error {
+        background: rgba(239, 68, 68, 0.1);
+        border-left: 4px solid var(--danger);
+        color: #991b1b;
+    }
+
+    .alert-warning {
+        background: rgba(245, 158, 11, 0.1);
+        border-left: 4px solid var(--warning);
+        color: #92400e;
+    }
+
+    /* Video Form Card */
+    .video-form-wrapper {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        margin-bottom: 24px;
+    }
+
+    .video-form-wrapper .card-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border-color);
+        background: linear-gradient(to right, var(--white), var(--light-1));
+    }
+
+    .video-form-wrapper .card-header h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .video-form-wrapper .card-header h3 i {
+        color: var(--youtube-red);
+        font-size: 20px;
+    }
+
+    .video-form-wrapper .card-body {
+        padding: 28px;
+    }
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 24px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+    }
+
+    .form-group .required:after {
+        content: '*';
+        color: var(--danger);
+        margin-left: 4px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 14px;
+        color: var(--text-primary);
+        background: var(--white);
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius);
+        transition: var(--transition);
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+
+    .form-control::placeholder {
+        color: var(--text-muted);
+    }
+
+    .form-hint {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .form-hint i {
+        color: var(--info);
+    }
+
+    /* YouTube URL Input with Icon */
+    .input-with-icon {
+        position: relative;
+    }
+
+    .input-with-icon .form-control {
+        padding-left: 44px;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--youtube-red);
+        font-size: 18px;
+    }
+
+    /* Live Preview */
+    .video-preview {
+        margin-top: 16px;
+        border-radius: var(--radius);
+        overflow: hidden;
+        background: #000;
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+    }
+
+    .video-preview iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+        border-radius: var(--radius);
+    }
+
+    .video-preview-placeholder {
+        background: var(--light-1);
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius);
+        padding: 40px;
+        text-align: center;
+        margin-top: 16px;
+    }
+
+    .video-preview-placeholder i {
+        font-size: 48px;
+        color: var(--text-muted);
+        opacity: 0.5;
+        margin-bottom: 12px;
+    }
+
+    .video-preview-placeholder p {
+        font-size: 14px;
+        color: var(--text-muted);
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-color);
+        margin-top: 24px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: var(--radius);
+        transition: var(--transition);
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn i {
+        font-size: 15px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        color: var(--white);
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        color: var(--white);
+    }
+
+    .btn-secondary {
+        background: var(--light-1);
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+        background: var(--light-2);
+        color: var(--text-primary);
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, var(--danger), #f87171);
+        color: var(--white);
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        color: var(--white);
+    }
+
+    .btn-youtube {
+        background: linear-gradient(135deg, var(--youtube-red), #FF4444);
+        color: var(--white);
+        box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+    }
+
+    .btn-youtube:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
+        color: var(--white);
+    }
+
+    .btn-sm {
+        padding: 8px 14px;
+        font-size: 12px;
+    }
+
+    /* Table Card */
+    .table-card {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .table-card .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .table-card .card-header h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .table-card .card-header h3 i {
+        color: var(--youtube-red);
+        font-size: 20px;
+    }
+
+    .video-count-badge {
+        font-size: 13px;
+        color: var(--text-muted);
+        background: var(--light-1);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Table Styles */
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 16px 20px;
+        text-align: left;
+    }
+
+    .data-table th {
+        background: var(--light-1);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-secondary);
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+    }
+
+    .data-table td {
+        font-size: 14px;
+        color: var(--text-primary);
+        border-bottom: 1px solid var(--border-color);
+        vertical-align: middle;
+    }
+
+    .data-table tbody tr {
+        transition: var(--transition);
+    }
+
+    .data-table tbody tr:hover {
+        background: var(--light-1);
+    }
+
+    .data-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Video Thumbnail */
+    .video-thumbnail {
+        position: relative;
+        width: 180px;
+        height: 100px;
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        background: #000;
+    }
+
+    .video-thumbnail iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        pointer-events: none;
+    }
+
+    .video-thumbnail-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 36px;
+        height: 36px;
+        background: rgba(255, 0, 0, 0.9);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-size: 14px;
+        pointer-events: none;
+    }
+
+    .video-thumbnail-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--light-1);
+    }
+
+    /* Video Title */
+    .video-title {
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    /* YouTube URL Display */
+    .youtube-url {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: var(--youtube-light);
+        color: var(--youtube-red);
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        max-width: 220px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .youtube-url i {
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-muted);
+    }
+
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.3;
+    }
+
+    .empty-state h4 {
+        font-size: 18px;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .empty-state p {
+        font-size: 14px;
+        color: var(--text-muted);
+    }
+
+    /* Info Card */
+    .video-info-card {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        height: fit-content;
+        position: sticky;
+        top: 24px;
+    }
+
+    .video-info-card .card-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border-color);
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    }
+
+    .video-info-card .card-header h4 {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+    }
+
+    .video-info-card .card-body {
+        padding: 24px;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .info-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .info-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+
+    .info-icon.bg-youtube {
+        background: var(--youtube-light);
+        color: var(--youtube-red);
+    }
+
+    .info-icon.bg-primary-light {
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--primary);
+    }
+
+    .info-icon.bg-warning-light {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning);
+    }
+
+    .info-content h5 {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+
+    .info-content p {
+        font-size: 13px;
+        color: var(--text-secondary);
+        line-height: 1.5;
+    }
+
+    /* URL Examples */
+    .url-examples {
+        margin-top: 16px;
+        padding: 16px;
+        background: var(--light-1);
+        border-radius: var(--radius);
+    }
+
+    .url-examples h5 {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+    }
+
+    .url-example-item {
+        font-size: 12px;
+        color: var(--text-muted);
+        padding: 4px 0;
+        font-family: monospace;
+        word-break: break-all;
+    }
+
+    .url-example-item i {
+        color: var(--success);
+        margin-right: 6px;
+        font-size: 10px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+        .video-management-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .video-info-card {
+            order: -1;
+            position: static;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .video-form-wrapper .card-body {
+            padding: 20px;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+        }
+        
+        .form-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .action-buttons .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .video-thumbnail {
+            width: 140px;
+            height: 80px;
+        }
+    }
+
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block admin_main %}
+<div class="page-content"> 
+    <!-- Messages Display -->
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% elif message.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+            <span>{{ message }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content Grid -->
+    <div class="video-management-container">
+        
+        <!-- Left Column: Form & Table -->
+        <div>
+            
+            <!-- Video Form Card -->
+            <div class="video-form-wrapper">
+                <div class="card-header">
+                    <h3>
+                        <i class="fab fa-youtube"></i>
+                        {% if video %}Update Video{% else %}Add New Video{% endif %}
+                    </h3>
+                </div>
+
+                <div class="card-body">
+                    <form method="POST" id="videoForm" 
+                          action="{% if video %}{% url 'dashboard:video_update' video.id %}{% else %}{% endif %}">
+                        {% csrf_token %}
+
+                        <div class="form-group">
+                            <label class="required">Video Title</label>
+                            <input
+                                type="text"
+                                name="title"
+                                class="form-control"
+                                placeholder="Enter video title"
+                                value="{{ video.title|default:'' }}"
+                                required
+                                maxlength="200"
+                                id="titleInput"
+                            >
+                            <div id="titleCount" style="display: flex; justify-content: flex-end; font-size: 12px; color: var(--text-muted); margin-top: 6px;">0/200</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="required">YouTube URL</label>
+                            <div class="input-with-icon">
+                                <i class="fab fa-youtube input-icon"></i>
+                                <input
+                                    type="url"
+                                    name="youtube_url"
+                                    class="form-control"
+                                    placeholder="https://www.youtube.com/watch?v=..."
+                                    value="{{ video.youtube_url|default:'' }}"
+                                    required
+                                    id="youtubeUrlInput"
+                                >
+                            </div>
+                            <div class="form-hint">
+                                <i class="fas fa-info-circle"></i>
+                                Paste a YouTube video URL to see live preview
+                            </div>
+                        </div>
+
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-{% if video %}check{% else %}save{% endif %}"></i>
+                                {% if video %}Update Video{% else %}Add Video{% endif %}
+                            </button>
+
+                            {% if video %}
+                            <a href="{% url 'dashboard:video_delete' video.id %}" 
+                               class="btn btn-danger"
+                               onclick="return confirm('Are you sure you want to delete &quot;{{ video.title|escapejs }}&quot;? This action cannot be undone.');">
+                                <i class="fas fa-trash-alt"></i>
+                                Delete Video
+                            </a>
+                            <a href="{% url 'dashboard:video_gallery' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i>
+                                Cancel Edit
+                            </a>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Info Card -->
+        <div class="video-info-card">
+            <div class="card-header">
+                <h4>
+                    <i class="fas fa-info-circle"></i>
+                    Video Guidelines
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="info-item">
+                    <div class="info-icon bg-youtube">
+                        <i class="fab fa-youtube"></i>
+                    </div>
+                    <div class="info-content">
+                        <h5>YouTube Integration</h5>
+                        <p>This gallery supports YouTube videos. Simply paste the YouTube video URL to add it to your gallery.</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon bg-primary-light">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <div class="info-content">
+                        <h5>Supported URL Formats</h5>
+                        <p>Multiple YouTube URL formats are supported for easy video embedding.</p>
+                    </div>
+                </div>
+
+                <div class="url-examples">
+                    <h5>Accepted URL Formats:</h5>
+                    <div class="url-example-item">
+                        <i class="fas fa-check-circle"></i>
+                        youtube.com/watch?v=VIDEO_ID
+                    </div>
+                    <div class="url-example-item">
+                        <i class="fas fa-check-circle"></i>
+                        youtu.be/VIDEO_ID
+                    </div>
+                    <div class="url-example-item">
+                        <i class="fas fa-check-circle"></i>
+                        youtube.com/embed/VIDEO_ID
+                    </div>
+                    <div class="url-example-item">
+                        <i class="fas fa-check-circle"></i>
+                        youtube.com/shorts/VIDEO_ID
+                    </div>
+                </div>
+
+                <div class="info-item" style="margin-top: 20px;">
+                    <div class="info-icon bg-warning-light">
+                        <i class="fas fa-heading"></i>
+                    </div>
+                    <div class="info-content">
+                        <h5>Descriptive Title</h5>
+                        <p>Use a clear, descriptive title that helps identify the video content in your gallery.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block admin_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Character count for title
+        const titleInput = document.getElementById('titleInput');
+        const titleCount = document.getElementById('titleCount');
+        
+        if (titleInput && titleCount) {
+            function updateCharCount() {
+                const current = titleInput.value.length;
+                const max = 200;
+                titleCount.textContent = `${current}/${max}`;
+                titleCount.style.color = current >= max * 0.9 ? 'var(--danger)' : 
+                                        current >= max * 0.7 ? 'var(--warning)' : 'var(--text-muted)';
+            }
+            updateCharCount();
+            titleInput.addEventListener('input', updateCharCount);
+        }
+
+        // YouTube URL live preview
+        const youtubeUrlInput = document.getElementById('youtubeUrlInput');
+        const videoPreviewContainer = document.getElementById('videoPreviewContainer');
+        
+        if (youtubeUrlInput) {
+            youtubeUrlInput.addEventListener('input', function() {
+                const url = this.value.trim();
+                const videoId = extractYouTubeVideoId(url);
+                
+                // Remove existing previews
+                const existingPreview = videoPreviewContainer.querySelector('.video-preview');
+                const existingPlaceholder = videoPreviewContainer.querySelector('.video-preview-placeholder');
+                if (existingPreview) existingPreview.remove();
+                if (existingPlaceholder) existingPlaceholder.remove();
+                
+                if (url && videoId) {
+                    // Valid URL - show preview
+                    const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                    const previewDiv = document.createElement('div');
+                    previewDiv.className = 'video-preview';
+                    previewDiv.innerHTML = `
+                        <iframe src="${embedUrl}" frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen></iframe>
+                    `;
+                    videoPreviewContainer.appendChild(previewDiv);
+                    youtubeUrlInput.style.borderColor = 'var(--success)';
+                } else if (url && !videoId) {
+                    // Invalid URL
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'video-preview-placeholder';
+                    placeholder.innerHTML = '<i class="fab fa-youtube"></i><p style="color: var(--danger);">Invalid YouTube URL format</p>';
+                    videoPreviewContainer.appendChild(placeholder);
+                    youtubeUrlInput.style.borderColor = 'var(--danger)';
+                } else {
+                    // Empty input
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'video-preview-placeholder';
+                    placeholder.innerHTML = '<i class="fab fa-youtube"></i><p>Enter a YouTube URL to see live preview</p>';
+                    videoPreviewContainer.appendChild(placeholder);
+                    youtubeUrlInput.style.borderColor = 'var(--border-color)';
+                }
+            });
+            
+            // Trigger initial preview if editing
+            if (youtubeUrlInput.value) {
+                youtubeUrlInput.dispatchEvent(new Event('input'));
+            }
+        }
+
+        // Extract YouTube Video ID from various URL formats
+        function extractYouTubeVideoId(url) {
+            if (!url) return null;
+            
+            const patterns = [
+                /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
+                /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
+                /(?:https?:\/\/)?youtu\.be\/([a-zA-Z0-9_-]{11})/,
+                /(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([a-zA-Z0-9_-]{11})/,
+                /(?:https?:\/\/)?(?:www\.)?youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,
+            ];
+            
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match) return match[1];
+            }
+            
+            // Try query parameter parsing
+            try {
+                const urlObj = new URL(url);
+                if (urlObj.hostname.includes('youtube.com')) {
+                    return urlObj.searchParams.get('v');
+                }
+            } catch (e) {}
+            
+            return null;
+        }
+
+        // Form validation
+        const videoForm = document.getElementById('videoForm');
+        if (videoForm) {
+            videoForm.addEventListener('submit', function(e) {
+                const title = this.querySelector('[name="title"]');
+                const youtubeUrl = this.querySelector('[name="youtube_url"]');
+                let hasError = false;
+                
+                if (title && !title.value.trim()) {
+                    showToast('Please enter a video title.', 'error');
+                    title.focus();
+                    hasError = true;
+                } else if (youtubeUrl && !youtubeUrl.value.trim()) {
+                    showToast('Please enter a YouTube URL.', 'error');
+                    youtubeUrl.focus();
+                    hasError = true;
+                } else if (youtubeUrl && !extractYouTubeVideoId(youtubeUrl.value.trim())) {
+                    showToast('Please enter a valid YouTube URL.', 'error');
+                    youtubeUrl.focus();
+                    hasError = true;
+                }
+                
+                if (hasError) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 24px;
+                right: 24px;
+                padding: 16px 24px;
+                background: ${type === 'error' ? 'var(--danger)' : type === 'success' ? 'var(--success)' : 'var(--primary)'};
+                color: white;
+                border-radius: var(--radius);
+                box-shadow: var(--shadow-xl);
+                font-size: 14px;
+                font-weight: 500;
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                max-width: 450px;
+                animation: slideInRight 0.3s ease;
+            `;
+            
+            const icon = document.createElement('i');
+            icon.className = `fas fa-${type === 'error' ? 'exclamation-circle' : type === 'success' ? 'check-circle' : 'info-circle'}`;
+            toast.appendChild(icon);
+            
+            const text = document.createElement('span');
+            text.textContent = message;
+            toast.appendChild(text);
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Add animation styles
+        const animStyles = document.createElement('style');
+        animStyles.textContent = `
+            @keyframes slideInRight {
+                from { opacity: 0; transform: translateX(100%); }
+                to { opacity: 1; transform: translateX(0); }
+            }
+            @keyframes slideOutRight {
+                from { opacity: 1; transform: translateX(0); }
+                to { opacity: 0; transform: translateX(100%); }
+            }
+        `;
+        document.head.appendChild(animStyles);
+    });
+</script>
+{% endblock %}

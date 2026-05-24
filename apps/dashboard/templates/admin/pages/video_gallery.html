@@ -1,116 +1,503 @@
 {% extends "admin/base/base.html" %}
 {% load static %}
 
+{% block admin_css %}
+<style>
+
+/* ========================================
+   VIDEO GALLERY MANAGEMENT
+======================================== */
+
+:root{
+    --youtube-red:#FF0000;
+    --youtube-dark:#CC0000;
+    --youtube-light:rgba(255,0,0,.10);
+}
+
+/* ========================================
+   LAYOUT
+======================================== */
+
+.video-management-container{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:24px;
+}
+
+/* ========================================
+   TABLE CARD
+======================================== */
+
+.table-card{
+    background:var(--white);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+}
+
+.table-card .card-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    padding:20px 24px;
+    border-bottom:1px solid var(--border-color);
+    flex-wrap:wrap;
+}
+
+.table-card .card-header h3{
+    font-size:18px;
+    font-weight:700;
+    color:var(--dark);
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.table-card .card-header h3 i{
+    color:var(--youtube-red);
+}
+
+.video-count-badge{
+    font-size:13px;
+    color:var(--text-muted);
+    background:var(--light-1);
+    padding:6px 14px;
+    border-radius:30px;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+/* ========================================
+   BUTTONS
+======================================== */
+
+.btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:10px 18px;
+    border:none;
+    border-radius:var(--radius);
+    text-decoration:none;
+    cursor:pointer;
+    transition:var(--transition);
+    font-size:14px;
+    font-weight:600;
+}
+
+.btn-sm{
+    padding:8px 14px;
+    font-size:12px;
+}
+
+.btn-primary{
+    background:linear-gradient(135deg,var(--primary),var(--primary-light));
+    color:#fff;
+}
+
+.btn-danger{
+    background:linear-gradient(135deg,var(--danger),#f87171);
+    color:#fff;
+}
+
+.btn-youtube{
+    background:linear-gradient(135deg,var(--youtube-red),#ff4444);
+    color:#fff;
+}
+
+.btn:hover{
+    transform:translateY(-2px);
+}
+
+/* ========================================
+   TABLE
+======================================== */
+
+.table-responsive{
+    overflow-x:auto;
+}
+
+.data-table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.data-table th,
+.data-table td{
+    padding:18px 20px;
+    text-align:left;
+}
+
+.data-table th{
+    background:var(--light-1);
+    font-size:12px;
+    font-weight:700;
+    text-transform:uppercase;
+    color:var(--text-secondary);
+    letter-spacing:.5px;
+    white-space:nowrap;
+}
+
+.data-table td{
+    font-size:14px;
+    color:var(--text-primary);
+    border-bottom:1px solid var(--border-color);
+    vertical-align:middle;
+}
+
+.data-table tbody tr{
+    transition:var(--transition);
+}
+
+.data-table tbody tr:hover{
+    background:var(--light-1);
+}
+
+/* ========================================
+   VIDEO THUMBNAIL
+======================================== */
+
+.video-thumbnail{
+    position:relative;
+    width:190px;
+    height:110px;
+    border-radius:14px;
+    overflow:hidden;
+    background:#000;
+    box-shadow:var(--shadow-sm);
+}
+
+.video-thumbnail img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    transition:.4s ease;
+}
+
+.video-thumbnail:hover img{
+    transform:scale(1.05);
+}
+
+.video-thumbnail-overlay{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,.18);
+}
+
+.video-thumbnail-overlay i{
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    background:rgba(255,0,0,.92);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+    box-shadow:0 10px 25px rgba(0,0,0,.25);
+}
+
+/* ========================================
+   TITLE
+======================================== */
+
+.video-title{
+    font-size:14px;
+    font-weight:700;
+    color:var(--dark);
+    line-height:1.6;
+}
+
+/* ========================================
+   URL
+======================================== */
+
+.youtube-url{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:7px 12px;
+    background:var(--youtube-light);
+    color:var(--youtube-red);
+    border-radius:30px;
+    font-size:12px;
+    font-weight:600;
+    max-width:220px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.youtube-url i{
+    flex-shrink:0;
+}
+
+/* ========================================
+   ACTIONS
+======================================== */
+
+.action-buttons{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+/* ========================================
+   EMPTY STATE
+======================================== */
+
+.empty-state{
+    text-align:center;
+    padding:70px 20px;
+}
+
+.empty-state i{
+    font-size:50px;
+    color:var(--youtube-red);
+    opacity:.25;
+    margin-bottom:16px;
+}
+
+.empty-state h4{
+    font-size:20px;
+    color:var(--text-secondary);
+    margin-bottom:8px;
+}
+
+.empty-state p{
+    font-size:14px;
+    color:var(--text-muted);
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media(max-width:768px){
+
+    .table-card .card-header{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .video-thumbnail{
+        width:150px;
+        height:90px;
+    }
+
+    .action-buttons{
+        flex-direction:column;
+        align-items:stretch;
+    }
+
+    .action-buttons .btn{
+        width:100%;
+    }
+
+}
+
+</style>
+{% endblock %}
+
 {% block admin_main %}
+
 <div class="page-content">
 
-    <div class="page-title">
-        <h1>Video Gallery</h1>
-    </div>
+    <div class="video-management-container">
 
-    <div class="table-card">
+        <!-- TABLE -->
+        <div class="table-card">
 
-        <div class="card-header">
-            <h3>{% if video %}Update Video{% else %}Add Video{% endif %}</h3>
-        </div>
+            <div class="card-header">
 
-        <div class="card-body">
+                <h3>
+                    <i class="fab fa-youtube"></i>
+                    Video List
+                </h3>
 
-            <form method="POST">
-                {% csrf_token %}
+                <span class="video-count-badge">
+                    <i class="fas fa-video"></i>
+                    {{ videos|length }} Video{{ videos|length|pluralize }}
+                </span>
 
-                <div class="form-group">
-                    <label>Video Title</label>
-                    <input
-                        type="text"
-                        name="title"
-                        value="{{ video.title|default:'' }}"
-                        required
-                    >
-                </div>
+                <a href="{% url 'dashboard:video_add' %}"
+                   class="btn btn-primary">
 
-                <div class="form-group">
-                    <label>YouTube URL</label>
-                    <input
-                        type="url"
-                        name="youtube_url"
-                        value="{{ video.youtube_url|default:'' }}"
-                        required
-                    >
-                </div>
+                    <i class="fas fa-plus"></i>
+                    Add Video
 
-                <button class="btn btn-primary" type="submit">
-                    {% if video %}Update Video{% else %}Add Video{% endif %}
-                </button>
+                </a>
 
-            </form>
+            </div>
 
-        </div>
+            <div class="table-responsive">
 
-    </div>
+                <table class="data-table">
 
-    <br>
+                    <thead>
 
-    <div class="table-card">
+                        <tr>
 
-        <div class="card-header">
-            <h3>Video List</h3>
-        </div>
+                            <th>
+                                Preview
+                            </th>
 
-        <div class="table-responsive">
+                            <th>
+                                Title
+                            </th>
 
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Preview</th>
-                        <th>Title</th>
-                        <th>YouTube URL</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
+                            <th>
+                                URL
+                            </th>
 
-                <tbody>
-                    {% for item in videos %}
-                    <tr>
-                        <td>
-                            <iframe
-                                width="180"
-                                height="100"
-                                src="{{ item.youtube_embed_url }}"
-                                frameborder="0"
-                                allowfullscreen>
-                            </iframe>
-                        </td>
+                            <th>
+                                Actions
+                            </th>
 
-                        <td>{{ item.title }}</td>
+                        </tr>
 
-                        <td>{{ item.youtube_url }}</td>
+                    </thead>
 
-                        <td>
-                            <a class="btn" href="{% url 'dashboard:video_update' item.id %}">
-                                Edit
-                            </a>
+                    <tbody>
 
-                            <a
-                                class="btn"
-                                href="{% url 'dashboard:video_delete' item.id %}"
-                                onclick="return confirm('Delete this video?')"
-                            >
-                                Delete
-                            </a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4">No Video Found</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                        {% for item in videos %}
+
+                        <tr>
+
+                            <!-- THUMBNAIL -->
+                            <td>
+
+                                <div class="video-thumbnail">
+
+                                    {% if item.youtube_id %}
+
+                                    <img
+                                        src="{{ item.youtube_thumbnail_url }}"
+                                        alt="{{ item.title }}"
+                                        loading="lazy"
+                                    >
+
+                                    <div class="video-thumbnail-overlay">
+
+                                        <i class="fas fa-play"></i>
+
+                                    </div>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </td>
+
+                            <!-- TITLE -->
+                            <td>
+
+                                <span class="video-title">
+                                    {{ item.title }}
+                                </span>
+
+                            </td>
+
+                            <!-- URL -->
+                            <td>
+
+                                <span class="youtube-url"
+                                      title="{{ item.youtube_url }}">
+
+                                    <i class="fab fa-youtube"></i>
+
+                                    {{ item.youtube_url|truncatechars:35 }}
+
+                                </span>
+
+                            </td>
+
+                            <!-- ACTION -->
+                            <td>
+
+                                <div class="action-buttons">
+
+                                    {% if item.youtube_id %}
+
+                                    <a href="{{ item.youtube_watch_url }}"
+                                       class="btn btn-youtube btn-sm"
+                                       target="_blank">
+
+                                        <i class="fab fa-youtube"></i>
+                                        Watch
+
+                                    </a>
+
+                                    {% endif %}
+
+                                    <a href="{% url 'dashboard:video_update' item.id %}"
+                                       class="btn btn-primary btn-sm">
+
+                                        <i class="fas fa-edit"></i>
+                                        Edit
+
+                                    </a>
+
+                                    <a href="{% url 'dashboard:video_delete' item.id %}"
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('Delete this video?');">
+
+                                        <i class="fas fa-trash-alt"></i>
+                                        Delete
+
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td colspan="4">
+
+                                <div class="empty-state">
+
+                                    <i class="fab fa-youtube"></i>
+
+                                    <h4>
+                                        No Videos Found
+                                    </h4>
+
+                                    <p>
+                                        Add your first YouTube video.
+                                    </p>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
 
         </div>
 
     </div>
 
 </div>
+
 {% endblock %}

@@ -11,7 +11,7 @@
 
                     {% with active_url=request.resolver_match.url_name %}
 
-                    <li class="menu-item has-dropdown {% if active_url == 'mission' or active_url == 'vision' or active_url == 'photo_album' or active_url == 'photo_gallery' or active_url == 'video_gallery' %}open active{% endif %}">
+                    <li class="menu-item has-dropdown {% if active_url == 'mission' or active_url == 'vision' %}open active{% endif %}">
 
                         <!-- DROPDOWN BUTTON -->
 
@@ -45,6 +45,34 @@
                                     <span>Our Vision</span>
                                 </a>
                             </li>
+
+                        </ul>
+
+                    </li>
+
+                    {% endwith %}
+                    {% with active_url=request.resolver_match.url_name %}
+
+                    <li class="menu-item has-dropdown {% if active_url == 'photo_album' or active_url == 'photo_gallery' or active_url == 'video_gallery' %}open active{% endif %}">
+
+                        <!-- DROPDOWN BUTTON -->
+
+                        <a href="javascript:void(0)"
+                        class="menu-link dropdown-toggle">
+
+                            <i class="fas fa-building"></i>
+
+                            <span>
+                                Gallery
+                            </span>
+
+                            <i class="fas fa-angle-down dropdown-arrow"></i>
+
+                        </a>
+
+                        <!-- DROPDOWN MENU -->
+
+                        <ul class="submenu">
 
                             <li class="{% if active_url == 'photo_album' %}active{% endif %}">
                                 <a href="{% url 'dashboard:photo_album' %}">

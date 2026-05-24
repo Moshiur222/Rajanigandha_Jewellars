@@ -865,7 +865,7 @@ def admin_stores(request):
 # =========================
 # MISSION
 # =========================
-
+@admin_required
 def mission(request):
 
     return render(
@@ -877,7 +877,7 @@ def mission(request):
 # =========================
 # VISION
 # =========================
-
+@admin_required
 def vision(request):
 
     return render(
@@ -890,7 +890,7 @@ def vision(request):
 # PHOTO ALBUM
 # =========================
 from django.contrib import messages
-
+@admin_required
 def photo_album(request):
 
     albums = PhotoAlbum.objects.all()
@@ -903,7 +903,7 @@ def photo_album(request):
         }
     )
 
-
+@admin_required
 def photo_album_add(request):
 
     if request.method == "POST":
@@ -947,7 +947,7 @@ def photo_album_add(request):
         }
     )
 
-
+@admin_required
 def photo_album_update(request, slug):
 
     album = get_object_or_404(
@@ -987,7 +987,7 @@ def photo_album_update(request, slug):
         }
     )
 
-
+@admin_required
 def photo_album_delete(request, slug):
 
     album = get_object_or_404(
@@ -1010,7 +1010,7 @@ def photo_album_delete(request, slug):
 # =========================
 # PHOTO GALLERY
 # =========================
-
+@admin_required
 def photo_gallery(request, slug):
     """Display photos in an album"""
     album = get_object_or_404(PhotoAlbum, slug=slug)
@@ -1026,7 +1026,7 @@ def photo_gallery(request, slug):
 
 
 from django.db.models import Max
-
+@admin_required
 def photo_gallery_add(request, slug):
 
     album = get_object_or_404(PhotoAlbum, slug=slug)
@@ -1078,7 +1078,7 @@ def photo_gallery_add(request, slug):
         }
     )
 
-
+@admin_required
 def photo_gallery_update(request, slug):
     """Update a photo's details"""
     photo = get_object_or_404(PhotoGallery, sluh=slug)
@@ -1115,7 +1115,7 @@ def photo_gallery_update(request, slug):
     
     return render(request, "admin/pages/photo_update.html", context)
 
-
+@admin_required
 def photo_gallery_delete(request, slug):
 
     photo = get_object_or_404(
@@ -1143,10 +1143,106 @@ def photo_gallery_delete(request, slug):
 # =========================
 # VIDEO GALLERY
 # =========================
-
+@admin_required
 def video_gallery(request):
 
     return render(
         request,
         "admin/pages/video_gallery.html"
     )
+
+
+
+
+@admin_required
+def video_gallery(request):
+    """Display video gallery page with form and list"""
+    videos = VideoGallery.objects.filter(is_active=True)
+    
+    context = {
+        'videos': videos,
+    }
+    
+    # If editing, include the video object
+    video_id = request.GET.get('edit')
+    if video_id:
+        video = get_object_or_404(VideoGallery, pk=video_id)
+        context['video'] = video
+    
+    return render(request, "admin/pages/video_gallery.html", context)
+
+
+@admin_required
+def video_add(request):
+    """Add a new video"""
+    if request.method == "POST":
+        title = request.POST.get("title", "").strip()
+        youtube_url = request.POST.get("youtube_url", "").strip()
+        
+        # Validation
+        if not title:
+            messages.error(request, "Please provide a video title.")
+        elif not youtube_url:
+            messages.error(request, "Please provide a YouTube URL.")
+        elif VideoGallery.objects.filter(youtube_url=youtube_url).exists():
+            messages.error(request, "This YouTube URL has already been added.")
+        else:
+            video = VideoGallery.objects.create(
+                title=title,
+                youtube_url=youtube_url
+            )
+            
+            if video.youtube_id:
+                messages.success(request, f'Video "{title}" added successfully!')
+            else:
+                messages.warning(
+                    request, 
+                    f'Video added, but the YouTube URL format may not be recognized. '
+                )
+            
+            return redirect('dashboard:video_gallery')
+    
+    return  render(request, "admin/pages/video_gallery_form.html")
+
+
+@admin_required
+def video_update(request, pk):
+    """Update an existing video"""
+    video = get_object_or_404(VideoGallery, pk=pk)
+    
+    if request.method == "POST":
+        title = request.POST.get("title", "").strip()
+        youtube_url = request.POST.get("youtube_url", "").strip()
+        
+        if not title:
+            messages.error(request, "Please provide a video title.")
+        elif not youtube_url:
+            messages.error(request, "Please provide a YouTube URL.")
+        elif VideoGallery.objects.filter(youtube_url=youtube_url).exclude(pk=pk).exists():
+            messages.error(request, "This YouTube URL has already been added.")
+        else:
+            video.title = title
+            video.youtube_url = youtube_url
+            video.save()
+            
+            if video.youtube_id:
+                messages.success(request, f'Video "{title}" updated successfully!')
+            else:
+                messages.warning(request, 'Video updated, but the YouTube URL format may not be recognized.')
+            
+            return redirect('dashboard:video_gallery')
+    
+    # For GET request, redirect to gallery with edit parameter
+    return  render(request, "admin/pages/video_gallery_form.html",{'video':video})
+
+
+@admin_required
+def video_delete(request, pk):
+    """Delete a video"""
+    video = get_object_or_404(VideoGallery, pk=pk)
+    title = video.title
+    
+    video.delete()
+    messages.success(request, f'Video "{title}" deleted successfully!')
+    
+    return redirect('dashboard:video_gallery')
